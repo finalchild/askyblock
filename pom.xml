@@ -96,95 +96,11 @@
 		If you do not have or do not need a server version, delete the reference here and
 		delete the corresponding package in the source code starting with com.wasteofplastic.askyblock.nms. -->
 		<dependency>
-			<groupId>bukkit.org</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/craftbukkit-1.7.9-R0.3-20140705.002733-4.jar</systemPath>
-			<version>1.7.9</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.9.2</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.9.2.jar</systemPath>
-			<version>1.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.9.4</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.9.4.jar</systemPath>
-			<version>1.9.4</version>
-		</dependency>
-		<dependency>
 			<groupId>spigotmc.org</groupId>
 			<artifactId>spigot-1.12</artifactId>
 			<scope>system</scope>
 			<systemPath>${server.jars}/spigot-1.12.jar</systemPath>
 			<version>1.12</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.10</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.10.jar</systemPath>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.11</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.11.jar</systemPath>
-			<version>1.11</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.9</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.9.jar</systemPath>
-			<version>1.9</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1.8</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.8.jar</systemPath>
-			<version>1.8</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot.1.8.3</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.8.3.jar</systemPath>
-			<version>1.8.3</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot.1.8.4</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.8.4.jar</systemPath>
-			<version>1.8.4</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot.1.8.6</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.8.6.jar</systemPath>
-			<version>1.8.6</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot.1.8.8</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1.8.8.jar</systemPath>
-			<version>1.8.8</version>
-		</dependency>
-		<dependency>
-			<groupId>spigotmc.org</groupId>
-			<artifactId>spigot-1649</artifactId>
-			<scope>system</scope>
-			<systemPath>${server.jars}/spigot-1649.jar</systemPath>
-			<version>1.7.10</version>
 		</dependency>
 	</dependencies>
 	<repositories>
