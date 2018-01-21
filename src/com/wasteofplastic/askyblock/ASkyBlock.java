@@ -20,7 +20,6 @@ package com.wasteofplastic.askyblock;
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -407,73 +406,70 @@ public class ASkyBlock extends JavaPlugin {
                         getLogger().info("Silencing command feedback for Ops...");
                         getServer().dispatchCommand(getServer().getConsoleSender(), "minecraft:gamerule sendCommandFeedback false");
                         getLogger().info("If you do not want this, do /gamerule sendCommandFeedback true");
-                    } catch (Exception e) {} // do nothing
+                    } catch (Exception ignored) {} // do nothing
                 }
                 
                 // Run these one tick later to ensure worlds are loaded.
-                getServer().getScheduler().runTask(ASkyBlock.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        // load the list - order matters - grid first, then top
-                        // ten to optimize upgrades
-                        // Load grid
-                        if (grid == null) {
-                            grid = new GridManager(ASkyBlock.this);
-                        }
-                        // Register events
-                        registerEvents();
-
-                        // Load TinyDb
-                        if (tinyDB == null) {
-                            tinyDB = new TinyDB(ASkyBlock.this);
-                        }
-                        // Load warps
-                        getWarpSignsListener().loadWarpList();
-                        // Load the warp panel
-                        if (Settings.useWarpPanel) {
-                            warpPanel = new WarpPanel(ASkyBlock.this);
-                            getServer().getPluginManager().registerEvents(warpPanel, ASkyBlock.this);
-                        }						
-                        // Load the TopTen GUI
-                        if (!Settings.displayIslandTopTenInChat){
-                            topTen = new TopTen(ASkyBlock.this);
-                            getServer().getPluginManager().registerEvents(topTen, ASkyBlock.this);
-                        }
-                        // Minishop - must wait for economy to load before we can use
-                        // econ
-                        getServer().getPluginManager().registerEvents(new ControlPanel(ASkyBlock.this), ASkyBlock.this);
-                        // Settings
-                        settingsPanel = new SettingsPanel(ASkyBlock.this);
-                        getServer().getPluginManager().registerEvents(settingsPanel, ASkyBlock.this);
-                        // Biomes
-                        // Load Biomes
-                        biomes = new BiomesPanel(ASkyBlock.this);
-                        getServer().getPluginManager().registerEvents(biomes, ASkyBlock.this);
-
-                        TopTen.topTenLoad();
-
-                        // Add any online players to the DB
-                        for (Player onlinePlayer : ASkyBlock.this.getServer().getOnlinePlayers()) {
-                            tinyDB.savePlayerName(onlinePlayer.getName(), onlinePlayer.getUniqueId());
-                        }
-                        if (Settings.backupDuration > 0) {
-                            new AsyncBackup(ASkyBlock.this);
-                        }
-                        // Load the coops
-                        if (Settings.persistantCoops) {
-                            CoopPlay.getInstance().loadCoops();
-                        }
-                        // Give temp permissions
-                        playerEvents.giveAllTempPerms();
-                        
-                        getLogger().info("All files loaded. Ready to play...");
-                        
-                        registerCustomCharts();
-                        getLogger().info("Metrics loaded.");
-                        
-                        // Fire event
-                        getServer().getPluginManager().callEvent(new ReadyEvent());
+                getServer().getScheduler().runTask(ASkyBlock.this, () -> {
+                    // load the list - order matters - grid first, then top
+                    // ten to optimize upgrades
+                    // Load grid
+                    if (grid == null) {
+                        grid = new GridManager(ASkyBlock.this);
                     }
+                    // Register events
+                    registerEvents();
+
+                    // Load TinyDb
+                    if (tinyDB == null) {
+                        tinyDB = new TinyDB(ASkyBlock.this);
+                    }
+                    // Load warps
+                    getWarpSignsListener().loadWarpList();
+                    // Load the warp panel
+                    if (Settings.useWarpPanel) {
+                        warpPanel = new WarpPanel(ASkyBlock.this);
+                        getServer().getPluginManager().registerEvents(warpPanel, ASkyBlock.this);
+                    }
+                    // Load the TopTen GUI
+                    if (!Settings.displayIslandTopTenInChat){
+                        topTen = new TopTen(ASkyBlock.this);
+                        getServer().getPluginManager().registerEvents(topTen, ASkyBlock.this);
+                    }
+                    // Minishop - must wait for economy to load before we can use
+                    // econ
+                    getServer().getPluginManager().registerEvents(new ControlPanel(ASkyBlock.this), ASkyBlock.this);
+                    // Settings
+                    settingsPanel = new SettingsPanel(ASkyBlock.this);
+                    getServer().getPluginManager().registerEvents(settingsPanel, ASkyBlock.this);
+                    // Biomes
+                    // Load Biomes
+                    biomes = new BiomesPanel(ASkyBlock.this);
+                    getServer().getPluginManager().registerEvents(biomes, ASkyBlock.this);
+
+                    TopTen.topTenLoad();
+
+                    // Add any online players to the DB
+                    for (Player onlinePlayer : ASkyBlock.this.getServer().getOnlinePlayers()) {
+                        tinyDB.savePlayerName(onlinePlayer.getName(), onlinePlayer.getUniqueId());
+                    }
+                    if (Settings.backupDuration > 0) {
+                        new AsyncBackup(ASkyBlock.this);
+                    }
+                    // Load the coops
+                    if (Settings.persistantCoops) {
+                        CoopPlay.getInstance().loadCoops();
+                    }
+                    // Give temp permissions
+                    playerEvents.giveAllTempPerms();
+
+                    getLogger().info("All files loaded. Ready to play...");
+
+                    registerCustomCharts();
+                    getLogger().info("Metrics loaded.");
+
+                    // Fire event
+                    getServer().getPluginManager().callEvent(new ReadyEvent());
                 });
                 // Check for updates asynchronously
                 if (Settings.updateCheck) {
@@ -541,14 +537,11 @@ public class ASkyBlock extends JavaPlugin {
     public void checkUpdates() {
         // Version checker
         getLogger().info("Checking for new updates...");
-        getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                if (Settings.GAMETYPE.equals(GameType.ASKYBLOCK)) {
-                    updateCheck = new Updater(ASkyBlock.this, 85189, ASkyBlock.this.getFile(), UpdateType.NO_DOWNLOAD, true); // ASkyBlock
-                } else {
-                    updateCheck = new Updater(ASkyBlock.this, 80095, ASkyBlock.this.getFile(), UpdateType.NO_DOWNLOAD, true); // AcidIsland
-                }                
+        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+            if (Settings.GAMETYPE.equals(GameType.ASKYBLOCK)) {
+                updateCheck = new Updater(ASkyBlock.this, 85189, ASkyBlock.this.getFile(), UpdateType.NO_DOWNLOAD, true); // ASkyBlock
+            } else {
+                updateCheck = new Updater(ASkyBlock.this, 80095, ASkyBlock.this.getFile(), UpdateType.NO_DOWNLOAD, true); // AcidIsland
             }
         });
     }
@@ -950,31 +943,23 @@ public class ASkyBlock extends JavaPlugin {
      * Registers the custom charts for Metrics
      */
     public void registerCustomCharts(){
-        metrics.addCustomChart(new Metrics.SimplePie("challenges_count", new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                
-                int count = challenges.getAllChallenges().size();
-                if(count <= 0) return "0";
-                else if(count >= 1 && count <= 10) return "1-10";
-                else if(count >= 11 && count <= 20) return "11-20";
-                else if(count >= 21 && count <= 30) return "21-30";
-                else if(count >= 31 && count <= 40) return "31-40";
-                else if(count >= 41 && count <= 50) return "41-50";
-                else if(count >= 51 && count <= 75) return "51-75";
-                else if(count >= 76 && count <= 100) return "76-100";
-                else if(count >= 101 && count <= 150) return "101-150";
-                else if(count >= 151 && count <= 200) return "151-200";
-                else if(count >= 201 && count <= 300) return "201-300";
-                else return "300+";
-            }
+        metrics.addCustomChart(new Metrics.SimplePie("challenges_count", () -> {
+
+            int count = challenges.getAllChallenges().size();
+            if(count <= 0) return "0";
+            else if(count >= 1 && count <= 10) return "1-10";
+            else if(count >= 11 && count <= 20) return "11-20";
+            else if(count >= 21 && count <= 30) return "21-30";
+            else if(count >= 31 && count <= 40) return "31-40";
+            else if(count >= 41 && count <= 50) return "41-50";
+            else if(count >= 51 && count <= 75) return "51-75";
+            else if(count >= 76 && count <= 100) return "76-100";
+            else if(count >= 101 && count <= 150) return "101-150";
+            else if(count >= 151 && count <= 200) return "151-200";
+            else if(count >= 201 && count <= 300) return "201-300";
+            else return "300+";
         }));
         
-        metrics.addCustomChart(new Metrics.SingleLineChart("islands_count", new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return getGrid().getIslandCount();
-            }
-        }));
+        metrics.addCustomChart(new Metrics.SingleLineChart("islands_count", () -> getGrid().getIslandCount()));
     }
 }

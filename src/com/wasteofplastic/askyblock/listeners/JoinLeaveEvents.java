@@ -18,7 +18,6 @@ package com.wasteofplastic.askyblock.listeners;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -345,17 +344,14 @@ public class JoinLeaveEvents implements Listener {
         if (messages != null) {
             if (DEBUG)
                 plugin.getLogger().info("DEBUG: Messages waiting!");
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    Util.sendMessage(player, ChatColor.AQUA + plugin.myLocale(playerUUID).newsHeadline);
-                    int i = 1;
-                    for (String message : messages) {
-                        Util.sendMessage(player, i++ + ": " + message);
-                    }
-                    // Clear the messages
-                    plugin.getMessages().clearMessages(playerUUID);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                Util.sendMessage(player, ChatColor.AQUA + plugin.myLocale(playerUUID).newsHeadline);
+                int i = 1;
+                for (String message : messages) {
+                    Util.sendMessage(player, i++ + ": " + message);
                 }
+                // Clear the messages
+                plugin.getMessages().clearMessages(playerUUID);
             }, 40L);
         } // else {
         // plugin.getLogger().info("no messages");

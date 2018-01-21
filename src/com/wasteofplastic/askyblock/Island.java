@@ -30,7 +30,6 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 
 import com.google.common.collect.HashMultiset;
@@ -90,7 +89,7 @@ public class Island implements Cloneable {
         CROP_TRAMPLE, DOOR, ENCHANTING, ENDERPEARL, FURNACE, 
         GATE, HORSE_INVENTORY, HORSE_RIDING, HURT_MOBS, LEASH, LEVER_BUTTON, MUSIC, 
         PLACE_BLOCKS, PORTAL, PRESSURE_PLATE, PVP, NETHER_PVP, REDSTONE, SHEARING,
-        VILLAGER_TRADING, CHORUS_FRUIT, ENTER_EXIT_MESSAGES, MONSTER_SPAWN;
+        VILLAGER_TRADING, CHORUS_FRUIT, ENTER_EXIT_MESSAGES, MONSTER_SPAWN
     }
     // Island protection settings
     private static List<String> islandSettingsKey = new ArrayList<>();
@@ -328,22 +327,14 @@ public class Island implements Cloneable {
             if (split.length > 6) {
                 // Bukkit.getLogger().info("DEBUG: " + split[6]);
                 // Get locked status
-                if (split[6].equalsIgnoreCase("true")) {
-                    this.locked = true;
-                } else {
-                    this.locked = false;
-                }
+                this.locked = split[6].equalsIgnoreCase("true");
                 // Bukkit.getLogger().info("DEBUG: " + locked);
             } else {
                 this.locked = false;
             }
             // Check if deletable
             if (split.length > 7) {
-                if (split[7].equalsIgnoreCase("true")) {
-                    this.purgeProtected = true;
-                } else {
-                    this.purgeProtected = false;
-                }
+                this.purgeProtected = split[7].equalsIgnoreCase("true");
             } else {
                 this.purgeProtected = false;
             }
@@ -500,10 +491,8 @@ public class Island implements Cloneable {
             //plugin.getLogger().info("DEBUG: max x = " + (minProtectedX + protectionRange) + " max z = " + (minProtectedZ + protectionRange));
 
             if (target.getWorld().equals(world) || (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null && target.getWorld().equals(ASkyBlock.getNetherWorld()))) {
-                if (target.getBlockX() >= minProtectedX && target.getBlockX() < (minProtectedX + protectionRange)
-                        && target.getBlockZ() >= minProtectedZ && target.getBlockZ() < (minProtectedZ + protectionRange)) {
-                    return true;
-                }
+                return target.getBlockX() >= minProtectedX && target.getBlockX() < (minProtectedX + protectionRange)
+                        && target.getBlockZ() >= minProtectedZ && target.getBlockZ() < (minProtectedZ + protectionRange);
                 /*
                 if (target.getX() >= center.getBlockX() - protectionRange / 2 && target.getX() < center.getBlockX() + protectionRange / 2
                         && target.getZ() >= center.getBlockZ() - protectionRange / 2 && target.getZ() < center.getBlockZ() + protectionRange / 2) {
@@ -524,20 +513,15 @@ public class Island implements Cloneable {
      */
     public boolean inIslandSpace(Location target) {
         if (target.getWorld().equals(ASkyBlock.getIslandWorld()) || target.getWorld().equals(ASkyBlock.getNetherWorld())) {
-            if (target.getX() >= center.getBlockX() - islandDistance / 2 && target.getX() < center.getBlockX() + islandDistance / 2
-                    && target.getZ() >= center.getBlockZ() - islandDistance / 2 && target.getZ() < center.getBlockZ() + islandDistance / 2) {
-                return true;
-            }
+            return target.getX() >= center.getBlockX() - islandDistance / 2 && target.getX() < center.getBlockX() + islandDistance / 2
+                    && target.getZ() >= center.getBlockZ() - islandDistance / 2 && target.getZ() < center.getBlockZ() + islandDistance / 2;
         }
         return false;
     }
 
     public boolean inIslandSpace(int x, int z) {
-        if (x >= center.getBlockX() - islandDistance / 2 && x < center.getBlockX() + islandDistance / 2 && z >= center.getBlockZ() - islandDistance / 2
-                && z < center.getBlockZ() + islandDistance / 2) {
-            return true;
-        }
-        return false;
+        return x >= center.getBlockX() - islandDistance / 2 && x < center.getBlockX() + islandDistance / 2 && z >= center.getBlockZ() - islandDistance / 2
+                && z < center.getBlockZ() + islandDistance / 2;
     }
 
     /**
@@ -806,9 +790,8 @@ public class Island implements Cloneable {
      * @return a list of UUIDs that have legitimate access to the island
      */
     public List<UUID> getMembers() {
-        List<UUID> result = new ArrayList<>();
         // Add any coop members for this island
-        result.addAll(CoopPlay.getInstance().getCoopPlayers(center.toVector().toLocation(ASkyBlock.getIslandWorld())));
+        List<UUID> result = new ArrayList<>(CoopPlay.getInstance().getCoopPlayers(center.toVector().toLocation(ASkyBlock.getIslandWorld())));
         if (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null) {
             result.addAll(CoopPlay.getInstance().getCoopPlayers(center.toVector().toLocation(ASkyBlock.getNetherWorld())));
         }
@@ -950,7 +933,7 @@ public class Island implements Cloneable {
      */
     public void toggleIgs(SettingsFlag flag) {
         if (igs.containsKey(flag)) {
-            igs.put(flag, igs.get(flag) ? false : true);
+            igs.put(flag, !igs.get(flag));
         }
 
     }

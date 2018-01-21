@@ -496,15 +496,12 @@ public class IslandGuard1_9 implements Listener {
             UUID uuid = ((Player)projectile.getShooter()).getUniqueId();
             // Store it and remove it when the effect is gone
             thrownPotions.put(e.getAreaEffectCloud().getEntityId(), uuid);
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (DEBUG)
+                    plugin.getLogger().info("DEBUG: Effect finished");
+                thrownPotions.remove(e.getAreaEffectCloud().getEntityId());
 
-                @Override
-                public void run() {
-                    if (DEBUG)
-                        plugin.getLogger().info("DEBUG: Effect finished");
-                    thrownPotions.remove(e.getAreaEffectCloud().getEntityId());
-
-                }}, e.getAreaEffectCloud().getDuration());
+            }, e.getAreaEffectCloud().getDuration());
         }
     }
 
@@ -574,11 +571,9 @@ public class IslandGuard1_9 implements Listener {
             if (e.getEntity() instanceof Player) {
                 if (pvp) {
                     if (DEBUG) plugin.getLogger().info("DEBUG: PVP allowed");
-                    return;
                 } else {
                     if (DEBUG) plugin.getLogger().info("DEBUG: PVP not allowed");
                     e.setCancelled(true);
-                    return;
                 }
             }
         }
@@ -604,10 +599,7 @@ public class IslandGuard1_9 implements Listener {
         if (island != null && (island.getIgsFlag(flag) || island.getMembers().contains(player.getUniqueId()))){
             return true;
         }
-        if (island == null && Settings.defaultWorldSettings.get(flag)) {
-            return true;
-        }
-        return false;
+        return island == null && Settings.defaultWorldSettings.get(flag);
     }
     
     /**
@@ -621,9 +613,6 @@ public class IslandGuard1_9 implements Listener {
         if (island != null && island.getIgsFlag(flag)){
             return true;
         }
-        if (island == null && Settings.defaultWorldSettings.get(flag)) {
-            return true;
-        }
-        return false;
+        return island == null && Settings.defaultWorldSettings.get(flag);
     }
 }

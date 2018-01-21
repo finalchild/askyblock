@@ -443,7 +443,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                         rewardQty = Integer.parseInt(element[1]);
                         ItemStack item = new ItemStack(rewardItem, rewardQty);
                         rewardedItems.add(item);
-                        final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(new ItemStack[]{item});
+                        final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(item);
                         if (!leftOvers.isEmpty()) {
                             player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
                         }
@@ -455,10 +455,10 @@ public class Challenges implements CommandExecutor, TabCompleter {
                     } catch (Exception e) {
                         Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorRewardProblem);
                         plugin.getLogger().severe("Could not give " + element[0] + ":" + element[1] + " to " + player.getName() + " for challenge reward!");
-                        String materialList = "";
+                        StringBuilder materialList = new StringBuilder();
                         boolean hint = false;
                         for (Material m : Material.values()) {
-                            materialList += m.toString() + ",";
+                            materialList.append(m.toString()).append(",");
                             if (element[0].length() > 3) {
                                 if (m.toString().startsWith(element[0].substring(0, 3))) {
                                     plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
@@ -515,7 +515,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                             if (item != null) {
                                 rewardedItems.add(item);
                                 final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(
-                                        new ItemStack[]{item});
+                                        item);
                                 if (!leftOvers.isEmpty()) {
                                     player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
                                 }
@@ -548,10 +548,10 @@ public class Challenges implements CommandExecutor, TabCompleter {
                         }
 
                     } else {*/
-                        String materialList = "";
+                        StringBuilder materialList = new StringBuilder();
                         boolean hint = false;
                         for (Material m : Material.values()) {
-                            materialList += m.toString() + ",";
+                            materialList.append(m.toString()).append(",");
                             if (m.toString().startsWith(element[0].substring(0, 3))) {
                                 plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
                                 hint = true;
@@ -590,9 +590,9 @@ public class Challenges implements CommandExecutor, TabCompleter {
                         plugin.getLogger().severe("POTION:JUMP:2:NOTEXTENDED:NOSPLASH:1");
                         plugin.getLogger().severe("POTION:WEAKNESS:::::1   -  any weakness potion");
                         plugin.getLogger().severe("Available names are:");
-                        String potionNames = "";
+                        StringBuilder potionNames = new StringBuilder();
                         for (PotionType p : PotionType.values()) {
-                            potionNames += p.toString() + ", ";
+                            potionNames.append(p.toString()).append(", ");
                         }
                         plugin.getLogger().severe(potionNames.substring(0, potionNames.length() - 2));
                         return null;
@@ -676,7 +676,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 }
                 PotionMeta potionMeta = (PotionMeta) result.getItemMeta();
                 try {
-                    PotionData potionData = new PotionData(PotionType.valueOf(element[1].toUpperCase()), extended, level > 1 ? true: false);
+                    PotionData potionData = new PotionData(PotionType.valueOf(element[1].toUpperCase()), extended, level > 1);
                     potionMeta.setBasePotionData(potionData); 
                 } catch (IllegalArgumentException iae) {
                     Bukkit.getLogger().severe("Potion parsing problem with " + element[1] +": " + iae.getMessage());
@@ -2180,10 +2180,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 resettingChallenges.set(challenge + ".resettime", timeToCheck);
                 Util.saveYamlFile(resettingChallenges, "resettimers.yml");
             }
-            if (timeToCheck > timestamp) {
-                // Timestamp is older than reset time
-                return true;
-            }
+            return timeToCheck > timestamp;
         }
         return false;
     }

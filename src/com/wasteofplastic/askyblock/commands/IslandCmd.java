@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -607,10 +605,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
         } else {
             // Ex-Leaders keeps their island, but the rest of the team members are
             // removed
-            if (!plugin.getPlayers().setLeaveTeam(playerUUID)) {
-                // Event was cancelled for some reason
-                return false;
-            }
+            return plugin.getPlayers().setLeaveTeam(playerUUID);
         }
         return true;
     }
@@ -647,14 +642,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
             }
         }
         // Sort according to order
-        Collections.sort(result, new Comparator<Schematic>() {
-
-            @Override
-            public int compare(Schematic o1, Schematic o2) {
-                return ((o2.getOrder() < o1.getOrder()) ? 1 : -1);
-            }
-
-        });
+        result.sort((o1, o2) -> ((o2.getOrder() < o1.getOrder()) ? 1 : -1));
         return result;
     }
 
@@ -818,16 +806,13 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      * @param player
      */
     private void pastePartner(final Schematic schematic, final Location loc, final Player player) {
-        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                schematic.pasteSchematic(loc, player, false, PasteReason.PARTNER);
-                if (schematic.isPlayerSpawn()) {
-                    // Set partner home
-                    plugin.getPlayers().setHomeLocation(player.getUniqueId(), schematic.getPlayerSpawn(loc), -2);
-                }
-            }}, 60L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            schematic.pasteSchematic(loc, player, false, PasteReason.PARTNER);
+            if (schematic.isPlayerSpawn()) {
+                // Set partner home
+                plugin.getPlayers().setHomeLocation(player.getUniqueId(), schematic.getPlayerSpawn(loc), -2);
+            }
+        }, 60L);
 
     }
 
@@ -1487,12 +1472,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                     Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).islandresetConfirm.replace("[seconds]", String.valueOf(Settings.resetConfirmWait)));
                     if (!confirm.containsKey(playerUUID) || !confirm.get(playerUUID)) {
                         confirm.put(playerUUID, true);
-                        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-                            @Override
-                            public void run() {
-                                confirm.put(playerUUID, false);
-                            }
-                        }, (Settings.resetConfirmWait * 20));
+                        plugin.getServer().getScheduler().runTaskLater(plugin, () -> confirm.put(playerUUID, false), (Settings.resetConfirmWait * 20));
                     }
                     return true;
                 } else {
@@ -2497,21 +2477,18 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                                                 }
                                                 // Start timeout on invite
                                                 if (Settings.inviteTimeout > 0) {
-                                                    plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-
-                                                        @Override
-                                                        public void run() {
-                                                            if (inviteList.containsKey(invitedPlayerUUID) && inviteList.get(invitedPlayerUUID).equals(playerUUID)) {
-                                                                inviteList.remove(invitedPlayerUUID);
-                                                                if (plugin.getServer().getPlayer(playerUUID) != null) {
-                                                                    Util.sendMessage(plugin.getServer().getPlayer(playerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
-                                                                }
-                                                                if (plugin.getServer().getPlayer(invitedPlayerUUID) != null) {
-                                                                    Util.sendMessage(plugin.getServer().getPlayer(invitedPlayerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
-                                                                }
+                                                    plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                                                        if (inviteList.containsKey(invitedPlayerUUID) && inviteList.get(invitedPlayerUUID).equals(playerUUID)) {
+                                                            inviteList.remove(invitedPlayerUUID);
+                                                            if (plugin.getServer().getPlayer(playerUUID) != null) {
+                                                                Util.sendMessage(plugin.getServer().getPlayer(playerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
                                                             }
+                                                            if (plugin.getServer().getPlayer(invitedPlayerUUID) != null) {
+                                                                Util.sendMessage(plugin.getServer().getPlayer(invitedPlayerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
+                                                            }
+                                                        }
 
-                                                        }}, Settings.inviteTimeout);
+                                                    }, Settings.inviteTimeout);
                                                 }
                                             } else {
                                                 Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).inviteerrorYourIslandIsFull);
@@ -2548,22 +2525,19 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                                         }
                                         // Start timeout on invite
                                         if (Settings.inviteTimeout > 0) {
-                                            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+                                            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
 
-                                                @Override
-                                                public void run() {
-
-                                                    if (inviteList.containsKey(invitedPlayerUUID) && inviteList.get(invitedPlayerUUID).equals(playerUUID)) {
-                                                        inviteList.remove(invitedPlayerUUID);
-                                                        if (plugin.getServer().getPlayer(playerUUID) != null) {
-                                                            Util.sendMessage(plugin.getServer().getPlayer(playerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
-                                                        }
-                                                        if (plugin.getServer().getPlayer(invitedPlayerUUID) != null) {
-                                                            Util.sendMessage(plugin.getServer().getPlayer(invitedPlayerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
-                                                        }
+                                                if (inviteList.containsKey(invitedPlayerUUID) && inviteList.get(invitedPlayerUUID).equals(playerUUID)) {
+                                                    inviteList.remove(invitedPlayerUUID);
+                                                    if (plugin.getServer().getPlayer(playerUUID) != null) {
+                                                        Util.sendMessage(plugin.getServer().getPlayer(playerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
                                                     }
+                                                    if (plugin.getServer().getPlayer(invitedPlayerUUID) != null) {
+                                                        Util.sendMessage(plugin.getServer().getPlayer(invitedPlayerUUID), ChatColor.YELLOW + plugin.myLocale(player.getUniqueId()).inviteremovingInvite);
+                                                    }
+                                                }
 
-                                                }}, Settings.inviteTimeout);
+                                            }, Settings.inviteTimeout);
                                         }
                                     } else {
                                         Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).inviteerrorThatPlayerIsAlreadyInATeam);
@@ -2908,7 +2882,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                                                             Item drop = player.getWorld().dropItemNaturally(player.getLocation(), i);
                                                             PlayerDropItemEvent event = new PlayerDropItemEvent(target, drop);
                                                             plugin.getServer().getPluginManager().callEvent(event);                                                        
-                                                        } catch (Exception e) {
+                                                        } catch (Exception ignored) {
                                                         }
                                                     }
                                                 }                           
@@ -3266,11 +3240,8 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      */
     public boolean onRestartWaitTime(final Player player) {
         if (resetWaitTime.containsKey(player.getUniqueId())) {
-            if (resetWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
-                return true;
-            }
+            return resetWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis();
 
-            return false;
         }
 
         return false;
@@ -3278,11 +3249,8 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
 
     public boolean onLevelWaitTime(final Player player) {
         if (levelWaitTime.containsKey(player.getUniqueId())) {
-            if (levelWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
-                return true;
-            }
+            return levelWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis();
 
-            return false;
         }
 
         return false;

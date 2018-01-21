@@ -87,18 +87,15 @@ public class LavaCheck implements Listener {
             final Material prev = to.getType();
             // plugin.getLogger().info("To material was " +
             // to.getType().toString());
-            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    // plugin.getLogger().info("To material is after 1 tick " +
-                    // to.getType().toString());
-                    if ((prev.equals(Material.WATER) || prev.equals(Material.STATIONARY_WATER)) && to.getType().equals(Material.STONE)) {
-                        to.setType(prev);
-                        if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
-                            to.getWorld().playSound(to.getLocation(), Sound.valueOf("FIZZ"), 1F, 2F);
-                        } else {
-                            to.getWorld().playSound(to.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 2F);
-                        }
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                // plugin.getLogger().info("To material is after 1 tick " +
+                // to.getType().toString());
+                if ((prev.equals(Material.WATER) || prev.equals(Material.STATIONARY_WATER)) && to.getType().equals(Material.STONE)) {
+                    to.setType(prev);
+                    if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
+                        to.getWorld().playSound(to.getLocation(), Sound.valueOf("FIZZ"), 1F, 2F);
+                    } else {
+                        to.getWorld().playSound(to.getLocation(), Sound.ENTITY_CREEPER_PRIMED, 1F, 2F);
                     }
                 }
             });
@@ -169,36 +166,33 @@ public class LavaCheck implements Listener {
                     //prevMat.add(r.getType());
                 }
                 // Check if they became cobblestone next tick
-                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        Iterator<Block> blockIt = prevBlock.iterator();
-                        Iterator<Material> matIt = prevMat.iterator();
-                        while (blockIt.hasNext() && matIt.hasNext()) {
-                            Block block = blockIt.next();
-                            Material material = matIt.next();
-                            if (block.getType().equals(Material.COBBLESTONE) && !block.getType().equals(material)) {
-                                //plugin.getLogger().info("DEBUG: " + material + " => " + block.getType());
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    Iterator<Block> blockIt = prevBlock.iterator();
+                    Iterator<Material> matIt = prevMat.iterator();
+                    while (blockIt.hasNext() && matIt.hasNext()) {
+                        Block block = blockIt.next();
+                        Material material = matIt.next();
+                        if (block.getType().equals(Material.COBBLESTONE) && !block.getType().equals(material)) {
+                            //plugin.getLogger().info("DEBUG: " + material + " => " + block.getType());
+                            //plugin.getLogger().info("DEBUG: Cobble generated. Island level = " + level);
+                            if(!Settings.magicCobbleGenChances.isEmpty()){
+                                Entry<Long,TreeMap<Double,Material>> entry = Settings.magicCobbleGenChances.floorEntry(level);
+                                double maxValue = entry.getValue().lastKey();
+                                double rnd = Util.randomDouble() * maxValue;
+                                Entry<Double, Material> en = entry.getValue().ceilingEntry(rnd);
+                                //Bukkit.getLogger().info("DEBUG: " + entry.getValue().toString());
                                 //plugin.getLogger().info("DEBUG: Cobble generated. Island level = " + level);
-                                if(!Settings.magicCobbleGenChances.isEmpty()){
-                                    Entry<Long,TreeMap<Double,Material>> entry = Settings.magicCobbleGenChances.floorEntry(level);
-                                    double maxValue = entry.getValue().lastKey();                                    
-                                    double rnd = Util.randomDouble() * maxValue;
-                                    Entry<Double, Material> en = entry.getValue().ceilingEntry(rnd);
-                                    //Bukkit.getLogger().info("DEBUG: " + entry.getValue().toString());
-                                    //plugin.getLogger().info("DEBUG: Cobble generated. Island level = " + level);
-                                    //plugin.getLogger().info("DEBUG: rnd = " + rnd + "/" + maxValue);
-                                    //plugin.getLogger().info("DEBUG: material = " + en.getValue());
-                                    if (en != null) {
-                                        block.setType(en.getValue());
-                                        // Record stats, per level
-                                        if (stats.containsKey(entry.getKey())) {
-                                            stats.get(entry.getKey()).add(en.getValue()); 
-                                        } else {
-                                            Multiset<Material> set = HashMultiset.create();
-                                            set.add(en.getValue());
-                                            stats.put(entry.getKey(), set);
-                                        }
+                                //plugin.getLogger().info("DEBUG: rnd = " + rnd + "/" + maxValue);
+                                //plugin.getLogger().info("DEBUG: material = " + en.getValue());
+                                if (en != null) {
+                                    block.setType(en.getValue());
+                                    // Record stats, per level
+                                    if (stats.containsKey(entry.getKey())) {
+                                        stats.get(entry.getKey()).add(en.getValue());
+                                    } else {
+                                        Multiset<Material> set = HashMultiset.create();
+                                        set.add(en.getValue());
+                                        stats.put(entry.getKey(), set);
                                     }
                                 }
                             }

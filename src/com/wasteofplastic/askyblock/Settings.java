@@ -16,12 +16,7 @@
  *******************************************************************************/
 package com.wasteofplastic.askyblock;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
@@ -85,20 +80,20 @@ public class Settings {
     /**
      * Default world protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultWorldSettings = new HashMap<>();
+    public static Map<SettingsFlag, Boolean> defaultWorldSettings = new HashMap<>();
 
     /**
      * Default island protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultIslandSettings = new HashMap<>();
+    public static Map<SettingsFlag, Boolean> defaultIslandSettings = new HashMap<>();
     /**
      * Default spawn protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultSpawnSettings = new HashMap<>();
+    public static Map<SettingsFlag, Boolean> defaultSpawnSettings = new HashMap<>();
     /**
      * Visitors settings to show in the GUI
      */
-    public static HashMap<SettingsFlag, Boolean> visitorSettings = new HashMap<>();
+    public static Map<SettingsFlag, Boolean> visitorSettings = new HashMap<>();
     // Flymode
     public static int flyTimeOutside;
     
@@ -122,7 +117,7 @@ public class Settings {
     public static int seaHeight;
     public static int islandProtectionRange;
     public static int abandonedIslandLevel;
-    public static Double startingMoney;
+    public static double startingMoney;
     public static double netherSpawnRadius;
     public static List<PotionEffectType> acidDamageType = new ArrayList<>();
     public static boolean resetMoney;
@@ -141,8 +136,8 @@ public class Settings {
     public static boolean resetChallenges;
 
     // Levels
-    public static HashMap<MaterialData, Integer> blockLimits;
-    public static HashMap<MaterialData, Integer> blockValues;
+    public static Map<MaterialData, Integer> blockLimits;
+    public static Map<MaterialData, Integer> blockValues;
 
     // Challenge completion broadcast
     public static boolean broadcastMessages;
@@ -239,7 +234,7 @@ public class Settings {
     public static List<String> visitorCommandBlockList;
     public static boolean muteDeathMessages;
     public static int maxIslands;
-    public static HashMap<String,Integer> limitedBlocks;
+    public static Map<String,Integer> limitedBlocks;
     public static long pvpRestartCooldown;
     public static long backupDuration;
     public static boolean acidBottle;
@@ -271,7 +266,7 @@ public class Settings {
     public static boolean allowMobDamageToItemFrames;
     public static boolean kickedKeepInv;
     public static boolean hackSkeletonSpawners;
-    public static HashMap<EntityType, Integer> entityLimits;
+    public static Map<EntityType, Integer> entityLimits;
     public static long acidItemDestroyTime;
     public static boolean helmetProtection;
     public static boolean fullArmorProtection;

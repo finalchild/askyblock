@@ -382,7 +382,6 @@ public class ControlPanel implements Listener {
                             // message =
                             // "You do not have enough of that item to sell it.";
                             message = (plugin.myLocale().minishopSellProblem).replace("[description]", item.getDescription());
-                            ;
                         }
                     }
                     // player.closeInventory(); // Closes the inventory

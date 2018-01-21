@@ -248,41 +248,38 @@ public class AcidInventory implements Listener {
                 || lastBlock.getType().equals(Material.CAULDRON)) {
             // They *may* have filled a bottle with water
             // Check inventory for POTIONS in a tick
-            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    // plugin.getLogger().info("Checking inventory");
-                    PlayerInventory inv = e.getPlayer().getInventory();
-                    if (inv.contains(Material.POTION)) {
-                        // plugin.getLogger().info("POTION in inventory");
-                        // They have a POTION of some kind in inventory
-                        int i = 0;
-                        for (ItemStack item : inv.getContents()) {
-                            if (item != null) {
-                                // plugin.getLogger().info(i + ":" +
-                                // item.getType().toString());
-                                if (item.getType().equals(Material.POTION)) {
-                                    NMSAbstraction nms = null;
-                                    try {
-                                        nms = Util.checkVersion();
-                                    } catch (Exception ex) {
-                                        return;
-                                    }
-                                    if (!nms.isPotion(item)) {
-                                        // plugin.getLogger().info("Water bottle found!");
-                                        ItemMeta meta = item.getItemMeta();
-                                        meta.setDisplayName(plugin.myLocale(e.getPlayer().getUniqueId()).acidBottle);
-                                        // ArrayList<String> lore = new
-                                        // ArrayList<String>(Arrays.asList("Poison",
-                                        // "Beware!", "Do not drink!"));
-                                        meta.setLore(lore);
-                                        item.setItemMeta(meta);
-                                        inv.setItem(i, item);
-                                    }
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                // plugin.getLogger().info("Checking inventory");
+                PlayerInventory inv = e.getPlayer().getInventory();
+                if (inv.contains(Material.POTION)) {
+                    // plugin.getLogger().info("POTION in inventory");
+                    // They have a POTION of some kind in inventory
+                    int i = 0;
+                    for (ItemStack item : inv.getContents()) {
+                        if (item != null) {
+                            // plugin.getLogger().info(i + ":" +
+                            // item.getType().toString());
+                            if (item.getType().equals(Material.POTION)) {
+                                NMSAbstraction nms = null;
+                                try {
+                                    nms = Util.checkVersion();
+                                } catch (Exception ex) {
+                                    return;
+                                }
+                                if (!nms.isPotion(item)) {
+                                    // plugin.getLogger().info("Water bottle found!");
+                                    ItemMeta meta = item.getItemMeta();
+                                    meta.setDisplayName(plugin.myLocale(e.getPlayer().getUniqueId()).acidBottle);
+                                    // ArrayList<String> lore = new
+                                    // ArrayList<String>(Arrays.asList("Poison",
+                                    // "Beware!", "Do not drink!"));
+                                    meta.setLore(lore);
+                                    item.setItemMeta(meta);
+                                    inv.setItem(i, item);
                                 }
                             }
-                            i++;
                         }
+                        i++;
                     }
                 }
             });

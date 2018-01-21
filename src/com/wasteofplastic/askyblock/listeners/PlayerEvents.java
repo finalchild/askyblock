@@ -29,7 +29,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -190,14 +189,11 @@ public class PlayerEvents implements Listener {
             if(VaultHelper.checkPerm(player, Settings.PERMPREFIX + "islandfly", island.getCenter().getWorld())) {
                 if (DEBUG)
                     plugin.getLogger().info("DEBUG: player has fly");
-                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    player.setAllowFlight(true);
+                    player.setFlying(true);
 
-                    @Override
-                    public void run() {
-                        player.setAllowFlight(true);
-                        player.setFlying(true);
-
-                    }});
+                });
 
             }
             if (DEBUG)
@@ -283,21 +279,17 @@ public class PlayerEvents implements Listener {
                         if (DEBUG)
                             plugin.getLogger().info("DEBUG: removed fly");
                     } else {
-                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                if(!plugin.getGrid().playerIsOnIsland(player) && player.isFlying()){
-                                    // Check they didn't enable creative
-                                    if (player.getGameMode().equals(GameMode.SURVIVAL)) {
-                                        player.setAllowFlight(false);
-                                        player.setFlying(false);
-                                        if (DEBUG)
-                                            plugin.getLogger().info("DEBUG: removed fly");
-                                    }
+                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                            if(!plugin.getGrid().playerIsOnIsland(player) && player.isFlying()){
+                                // Check they didn't enable creative
+                                if (player.getGameMode().equals(GameMode.SURVIVAL)) {
+                                    player.setAllowFlight(false);
+                                    player.setFlying(false);
+                                    if (DEBUG)
+                                        plugin.getLogger().info("DEBUG: removed fly");
                                 }
-
                             }
+
                         }, 20*Settings.flyTimeOutside);
                     }
                 }

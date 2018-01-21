@@ -314,7 +314,7 @@ public class PluginConfig {
                     plugin.getLogger().severe("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
                     return false;
                 }
-            } catch (Exception e) {}        
+            } catch (Exception ignored) {}
         }
 
         // Get the default language

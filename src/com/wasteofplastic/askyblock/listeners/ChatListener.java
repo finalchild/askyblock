@@ -124,11 +124,7 @@ public class ChatListener implements Listener {
             event.setCancelled(true);
             // Queue the sync task because you cannot use HashMaps asynchronously. Delaying to the next tick
             // won't be a major issue for synch events either.
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    teamChat(event,event.getMessage());
-                }});
+            Bukkit.getScheduler().runTask(plugin, () -> teamChat(event,event.getMessage()));
         }
     }
 

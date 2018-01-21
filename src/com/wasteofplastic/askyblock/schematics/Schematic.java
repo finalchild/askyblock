@@ -140,7 +140,7 @@ public class Schematic {
          * This is a reset
          */
         RESET
-    };
+    }
 
     public Schematic(ASkyBlock plugin) {
         this.plugin = plugin;
@@ -860,21 +860,13 @@ public class Schematic {
                         try {
                             Painting painting = blockLoc.getWorld().spawn(entitySpot, Painting.class);
                             if (painting != null) {
-                                if (paintingList.containsKey(ent.getMotive())) {
-                                    //painting.setArt(Art.GRAHAM);
-                                    painting.setArt(paintingList.get(ent.getMotive()), true);
-                                } else {
-                                    // Set default
-                                    painting.setArt(Art.ALBAN, true);
-                                }
+                                //painting.setArt(Art.GRAHAM);
+                                // Set default
+                                painting.setArt(paintingList.getOrDefault(ent.getMotive(), Art.ALBAN), true);
 
                                 // http://minecraft.gamepedia.com/Painting#Data_values
-                                if (facingList.containsKey(ent.getFacing())) {
-                                    painting.setFacingDirection(facingList.get(ent.getFacing()), true);
-                                } else {
-                                    //set default direction
-                                    painting.setFacingDirection(BlockFace.NORTH, true);
-                                }
+                                //set default direction
+                                painting.setFacingDirection(facingList.getOrDefault(ent.getFacing(), BlockFace.NORTH), true);
                                 //Bukkit.getLogger().info("DEBUG: Painting setFacingDirection: " + painting.getLocation().toString() + "; facing: " + painting.getFacing() + "; ent facing: " + ent.getFacing());
                                 //Bukkit.getLogger().info("DEBUG: Painting setArt: " + painting.getLocation().toString() + "; art: " + painting.getArt() + "; ent motive: " + ent.getMotive());
 
@@ -893,7 +885,6 @@ public class Schematic {
                         if (itemFrame != null) {
                             // Need to improve this shity fix ...
                             Material material = Material.matchMaterial(ent.getId().substring(10).toUpperCase());
-                            ;
 
                             if (material == null && IslandBlock.WEtoM.containsKey(ent.getId().substring(10).toUpperCase())) {
                                 material = IslandBlock.WEtoM.get(ent.getId().substring(10).toUpperCase());
@@ -929,20 +920,12 @@ public class Schematic {
                             item.setItemMeta(itemMeta);
                             itemFrame.setItem(item);
 
-                            if (facingList.containsKey(ent.getFacing())) {
-                                itemFrame.setFacingDirection(facingList.get(ent.getFacing()), true);
-                            } else {
-                                //set default direction
-                                itemFrame.setFacingDirection(BlockFace.NORTH, true);
-                            }
+                            //set default direction
+                            itemFrame.setFacingDirection(facingList.getOrDefault(ent.getFacing(), BlockFace.NORTH), true);
 
                             // TODO: Implements code to handle the rotation of the item in the itemframe
-                            if (rotationList.containsKey(ent.getItemRotation())) {
-                                itemFrame.setRotation(rotationList.get(ent.getItemRotation()));
-                            } else {
-                                // Set default direction
-                                itemFrame.setRotation(Rotation.NONE);
-                            }
+                            // Set default direction
+                            itemFrame.setRotation(rotationList.getOrDefault(ent.getItemRotation(), Rotation.NONE));
                         }
                         break;
                     default:
@@ -1121,65 +1104,57 @@ public class Schematic {
                     player.teleport(world.getSpawnLocation());
                 }
             }
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                plugin.getGrid().homeTeleport(player);
+                plugin.getPlayers().setInTeleport(player.getUniqueId(), false);
+                // Reset any inventory, etc. This is done AFTER the teleport because other plugins may switch out inventory based on world
+                plugin.resetPlayer(player);
+                // Reset money if required
+                if (Settings.resetMoney) {
+                    resetMoney(player);
+                }
+                // Show fancy titles!
+                if (!Bukkit.getServer().getVersion().contains("(MC: 1.7")) {
+                    if (!plugin.myLocale(player.getUniqueId()).islandSubTitle.isEmpty()) {
+                        //plugin.getLogger().info("DEBUG: title " + player.getName() + " subtitle {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitle + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitleColor + "\"}");
+                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(),
+                                "minecraft:title " + player.getName() + " subtitle {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitle.replace("[player]", player.getName()) + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitleColor + "\"}");
+                    }
+                    if (!plugin.myLocale(player.getUniqueId()).islandTitle.isEmpty()) {
+                        //plugin.getLogger().info("DEBUG: title " + player.getName() + " title {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandTitle + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandTitleColor + "\"}");
+                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(),
+                                "minecraft:title " + player.getName() + " title {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandTitle.replace("[player]", player.getName()) + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandTitleColor + "\"}");
+                    }
+                    if (!plugin.myLocale(player.getUniqueId()).islandDonate.isEmpty() && !plugin.myLocale(player.getUniqueId()).islandURL.isEmpty()) {
+                        //plugin.getLogger().info("DEBUG: tellraw " + player.getName() + " {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandDonate + "\",\"color\":\"" + plugin.myLocale(player.getUniqueId()).islandDonateColor + "\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\""
+                        //                + plugin.myLocale(player.getUniqueId()).islandURL + "\"}}");
+                        plugin.getServer().dispatchCommand(
+                                plugin.getServer().getConsoleSender(),
+                                "minecraft:tellraw " + player.getName() + " {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandDonate.replace("[player]", player.getName()) + "\",\"color\":\"" + plugin.myLocale(player.getUniqueId()).islandDonateColor + "\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\""
+                                        + plugin.myLocale(player.getUniqueId()).islandURL + "\"}}");
+                    }
+                }
+                if (reason.equals(PasteReason.NEW_ISLAND)) {
+                    // Run any commands that need to be run at the start
+                    //plugin.getLogger().info("DEBUG: First time");
+                    if (!player.hasPermission(Settings.PERMPREFIX + "command.newexempt")) {
+                        //plugin.getLogger().info("DEBUG: Executing new island commands");
+                        IslandCmd.runCommands(Settings.startCommands, player);
+                    }
+                } else if (reason.equals(PasteReason.RESET)) {
+                    // Run any commands that need to be run at reset
+                    //plugin.getLogger().info("DEBUG: Reset");
+                    if (!player.hasPermission(Settings.PERMPREFIX + "command.resetexempt")) {
+                        //plugin.getLogger().info("DEBUG: Executing reset island commands");
+                        IslandCmd.runCommands(Settings.resetCommands, player);
+                    }
+                }
 
-                @Override
-                public void run() {
-                    plugin.getGrid().homeTeleport(player);
-                    plugin.getPlayers().setInTeleport(player.getUniqueId(), false);
-                    // Reset any inventory, etc. This is done AFTER the teleport because other plugins may switch out inventory based on world
-                    plugin.resetPlayer(player);
-                    // Reset money if required
-                    if (Settings.resetMoney) {
-                        resetMoney(player);
-                    }
-                    // Show fancy titles!
-                    if (!Bukkit.getServer().getVersion().contains("(MC: 1.7")) {
-                        if (!plugin.myLocale(player.getUniqueId()).islandSubTitle.isEmpty()) {
-                            //plugin.getLogger().info("DEBUG: title " + player.getName() + " subtitle {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitle + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitleColor + "\"}");
-                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(),
-                                    "minecraft:title " + player.getName() + " subtitle {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitle.replace("[player]", player.getName()) + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandSubTitleColor + "\"}");
-                        }
-                        if (!plugin.myLocale(player.getUniqueId()).islandTitle.isEmpty()) {
-                            //plugin.getLogger().info("DEBUG: title " + player.getName() + " title {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandTitle + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandTitleColor + "\"}");
-                            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(),
-                                    "minecraft:title " + player.getName() + " title {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandTitle.replace("[player]", player.getName()) + "\", \"color\":\"" + plugin.myLocale(player.getUniqueId()).islandTitleColor + "\"}");
-                        }
-                        if (!plugin.myLocale(player.getUniqueId()).islandDonate.isEmpty() && !plugin.myLocale(player.getUniqueId()).islandURL.isEmpty()) {
-                            //plugin.getLogger().info("DEBUG: tellraw " + player.getName() + " {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandDonate + "\",\"color\":\"" + plugin.myLocale(player.getUniqueId()).islandDonateColor + "\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\""
-                            //                + plugin.myLocale(player.getUniqueId()).islandURL + "\"}}");
-                            plugin.getServer().dispatchCommand(
-                                    plugin.getServer().getConsoleSender(),
-                                    "minecraft:tellraw " + player.getName() + " {\"text\":\"" + plugin.myLocale(player.getUniqueId()).islandDonate.replace("[player]", player.getName()) + "\",\"color\":\"" + plugin.myLocale(player.getUniqueId()).islandDonateColor + "\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\""
-                                            + plugin.myLocale(player.getUniqueId()).islandURL + "\"}}");
-                        }
-                    }
-                    if (reason.equals(PasteReason.NEW_ISLAND)) {
-                        // Run any commands that need to be run at the start
-                        //plugin.getLogger().info("DEBUG: First time");
-                        if (!player.hasPermission(Settings.PERMPREFIX + "command.newexempt")) {
-                            //plugin.getLogger().info("DEBUG: Executing new island commands");
-                            IslandCmd.runCommands(Settings.startCommands, player);
-                        }
-                    } else if (reason.equals(PasteReason.RESET)) {
-                        // Run any commands that need to be run at reset
-                        //plugin.getLogger().info("DEBUG: Reset");
-                        if (!player.hasPermission(Settings.PERMPREFIX + "command.resetexempt")) {
-                            //plugin.getLogger().info("DEBUG: Executing reset island commands");
-                            IslandCmd.runCommands(Settings.resetCommands, player);
-                        }
-                    }
-
-                }}, 10L);
+            }, 10L);
 
         }
         if (!islandCompanion.isEmpty() && grass != null) {
-            Bukkit.getServer().getScheduler().runTaskLater(ASkyBlock.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    spawnCompanion(player, grass);
-                }
-            }, 40L);
+            Bukkit.getServer().getScheduler().runTaskLater(ASkyBlock.getPlugin(), () -> spawnCompanion(player, grass), 40L);
         }
         // Set the bedrock block meta data to the original spawn location
         // Doesn't survive a server restart. TODO: change to add this info elsewhere.
@@ -1376,12 +1351,7 @@ public class Schematic {
      */
     public void setPasteAir(boolean pasteAir) {
         if (!pasteAir) {
-            Iterator<IslandBlock> it = islandBlocks.iterator();
-            while (it.hasNext()) {
-                if (it.next().getTypeId() == 0) {
-                    it.remove();
-                }
-            }
+            islandBlocks.removeIf(islandBlock -> islandBlock.getTypeId() == 0);
         }
         //plugin.getLogger().info("DEBUG: islandBlocks after removing air blocks = " + islandBlocks.size());
     }
@@ -1578,12 +1548,7 @@ public class Schematic {
             }
         }
         if (!islandCompanion.isEmpty()) {
-            Bukkit.getServer().getScheduler().runTaskLater(ASkyBlock.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    spawnCompanion(player, location);
-                }
-            }, 40L);
+            Bukkit.getServer().getScheduler().runTaskLater(ASkyBlock.getPlugin(), () -> spawnCompanion(player, location), 40L);
         }
     }
     /**
@@ -1657,10 +1622,7 @@ public class Schematic {
      * @return if Biome is HELL, this is true
      */
     public boolean isInNether() {
-        if (biome == Biome.HELL) {
-            return true;
-        }
-        return false;
+        return biome == Biome.HELL;
     }
 
     /**
@@ -1726,10 +1688,7 @@ public class Schematic {
      * @return true if player spawn exists in this schematic
      */
     public boolean isPlayerSpawn() {
-        if (playerSpawn == null) {
-            return false;
-        }
-        return true;
+        return playerSpawn != null;
     }
 
     /**
@@ -1803,7 +1762,7 @@ public class Schematic {
                 // plugin.getLogger().warning("DEBUG: econ is null!");
                 VaultHelper.setupEconomy();
             }
-            Double playerBalance = VaultHelper.econ.getBalance(player, Settings.worldName);
+            double playerBalance = VaultHelper.econ.getBalance(player, Settings.worldName);
             // plugin.getLogger().info("DEBUG: playerbalance = " +
             // playerBalance);
             // Round the balance to 2 decimal places and slightly down to
@@ -1815,7 +1774,7 @@ public class Schematic {
             // + playerBalance);
             if (playerBalance != Settings.startingMoney) {
                 if (playerBalance > Settings.startingMoney) {
-                    Double difference = playerBalance - Settings.startingMoney;
+                    double difference = playerBalance - Settings.startingMoney;
                     EconomyResponse response = VaultHelper.econ.withdrawPlayer(player, Settings.worldName, difference);
                     // plugin.getLogger().info("DEBUG: withdrawn");
                     if (response.transactionSuccess()) {
@@ -1828,7 +1787,7 @@ public class Schematic {
                         plugin.getLogger().warning("Error from economy was: " + response.errorMessage);
                     }
                 } else {
-                    Double difference = Settings.startingMoney - playerBalance;
+                    double difference = Settings.startingMoney - playerBalance;
                     EconomyResponse response = VaultHelper.econ.depositPlayer(player, Settings.worldName, difference);
                     if (response.transactionSuccess()) {
                         plugin.getLogger().info(

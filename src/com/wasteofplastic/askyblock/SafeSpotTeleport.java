@@ -217,17 +217,14 @@ public class SafeSpotTeleport {
                         z = spawnLocFinal.getBlockZ() - spawnChunkFinal.getZ() * 16;
                         if (checkBlock(spawnChunkFinal, x, y, z, worldHeight)) {
                          // Return to main thread and teleport the player
-                            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    if (setHome) {
-                                        plugin.getPlayers().setHomeLocation(entity.getUniqueId(), spawnLocFinal, homeNumber);
-                                    }
-                                    Vector velocity = entity.getVelocity();
-                                    entity.teleport(spawnLocFinal);
-                                    entity.setVelocity(velocity);
-                                }});
+                            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                if (setHome) {
+                                    plugin.getPlayers().setHomeLocation(entity.getUniqueId(), spawnLocFinal, homeNumber);
+                                }
+                                Vector velocity = entity.getVelocity();
+                                entity.teleport(spawnLocFinal);
+                                entity.setVelocity(velocity);
+                            });
                             return;  
                         }
                     }
@@ -236,34 +233,28 @@ public class SafeSpotTeleport {
                         //final Vector spot = new Vector((16 *currentChunk.getX()) + x + 0.5D, y +1, (16 * currentChunk.getZ()) + z + 0.5D)
                         final Vector spot = new Vector((16 *safeChunk.getX()) + 0.5D, 1, (16 * safeChunk.getZ()) + 0.5D).add(safeSpotInChunk);
                         // Return to main thread and teleport the player
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Location destination = spot.toLocation(islandLoc.getWorld());
-                                //plugin.getLogger().info("DEBUG: safe spot found = " + destination);
-                                if (setHome && entity instanceof Player) {
-                                    plugin.getPlayers().setHomeLocation(entity.getUniqueId(), destination, homeNumber);
-                                }
-                                Vector velocity = entity.getVelocity();
-                                entity.teleport(destination);
-                                entity.setVelocity(velocity);
-                            }});
+                        plugin.getServer().getScheduler().runTask(plugin, () -> {
+                            Location destination = spot.toLocation(islandLoc.getWorld());
+                            //plugin.getLogger().info("DEBUG: safe spot found = " + destination);
+                            if (setHome && entity instanceof Player) {
+                                plugin.getPlayers().setHomeLocation(entity.getUniqueId(), destination, homeNumber);
+                            }
+                            Vector velocity = entity.getVelocity();
+                            entity.teleport(destination);
+                            entity.setVelocity(velocity);
+                        });
                     } else {
                         // We did not find a spot
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                //plugin.getLogger().info("DEBUG: safe spot not found");
-                                if (entity instanceof Player) {
-                                    if (!failureMessage.isEmpty()) {
-                                        Util.sendMessage(entity, failureMessage);
-                                    } else {
-                                        Util.sendMessage(entity, ChatColor.RED + plugin.myLocale(entity.getUniqueId()).warpserrorNotSafe);
-                                    }
+                        plugin.getServer().getScheduler().runTask(plugin, () -> {
+                            //plugin.getLogger().info("DEBUG: safe spot not found");
+                            if (entity instanceof Player) {
+                                if (!failureMessage.isEmpty()) {
+                                    Util.sendMessage(entity, failureMessage);
+                                } else {
+                                    Util.sendMessage(entity, ChatColor.RED + plugin.myLocale(entity.getUniqueId()).warpserrorNotSafe);
                                 }
-                            }});
+                            }
+                        });
                     }
                 }
 

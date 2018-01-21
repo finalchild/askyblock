@@ -111,8 +111,7 @@ public final class IntArrayTag extends Tag {
         if (!super.equals(obj)) { return false; }
         if (!(obj instanceof IntArrayTag)) { return false; }
         final IntArrayTag other = (IntArrayTag) obj;
-        if (!Arrays.equals(value, other.value)) { return false; }
-        return true;
+        return Arrays.equals(value, other.value);
     }
     
 }

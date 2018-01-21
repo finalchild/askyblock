@@ -27,19 +27,16 @@ public final class FileLister {
         // In this way, admins can remove access to locale files they do not want
         File localeDir = new File(plugin.getDataFolder(), FOLDERPATH);
         if (localeDir.exists()) {
-            FilenameFilter ymlFilter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    String lowercaseName = name.toLowerCase();
-                    //plugin.getLogger().info("DEBUG: filename = " + name);
-                    if (lowercaseName.endsWith(".yml") && name.length() == 9 && name.substring(2,3).equals("-")) {
-                        return true;
-                    } else {
-                        if (lowercaseName.endsWith(".yml") && !lowercaseName.equals("locale.yml")) {
-                            plugin.getLogger().severe("Filename '" + name + "' is not in the correct format for a locale file - skipping...");
-                        }
-                        return false;
+            FilenameFilter ymlFilter = (dir, name) -> {
+                String lowercaseName = name.toLowerCase();
+                //plugin.getLogger().info("DEBUG: filename = " + name);
+                if (lowercaseName.endsWith(".yml") && name.length() == 9 && name.substring(2,3).equals("-")) {
+                    return true;
+                } else {
+                    if (lowercaseName.endsWith(".yml") && !lowercaseName.equals("locale.yml")) {
+                        plugin.getLogger().severe("Filename '" + name + "' is not in the correct format for a locale file - skipping...");
                     }
+                    return false;
                 }
             };
             for (String fileName : localeDir.list(ymlFilter)) {

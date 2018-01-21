@@ -154,6 +154,5 @@ public class SchematicsPanel implements Listener {
             schematicItems.remove(player.getUniqueId());
             thisPanel.clear();   
         }
-        return;
     }
 }

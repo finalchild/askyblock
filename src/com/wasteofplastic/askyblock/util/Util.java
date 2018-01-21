@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -244,7 +245,7 @@ public class Util {
      * @return Location
      */
     static public Location getLocationString(final String s) {
-        if (s == null || s.trim() == "") {
+        if (s == null || Objects.equals(s.trim(), "")) {
             return null;
         }
         final String[] parts = s.split(":");
@@ -415,16 +416,9 @@ public class Util {
      * @throws IOException
      */
     public static void setPlayerYamlConfig(File playerFolder, String setting, String newSettingValue) throws IOException {
-        FilenameFilter ymlFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                String lowercaseName = name.toLowerCase();
-                if (lowercaseName.endsWith(".yml")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        FilenameFilter ymlFilter = (dir, name) -> {
+            String lowercaseName = name.toLowerCase();
+            return lowercaseName.endsWith(".yml");
         };
         for (File file: playerFolder.listFiles(ymlFilter)) {
             Path path = Paths.get(file.getAbsolutePath());
@@ -508,27 +502,16 @@ public class Util {
     public static boolean playerIsHolding(Player player, Material type) {
         if (plugin.getServer().getVersion().contains("(MC: 1.7")
                 || plugin.getServer().getVersion().contains("(MC: 1.8")) {
-            if (player.getItemInHand() != null && player.getItemInHand().getType().equals(type)) {
-                return true;
-            }
-            return false;
+            return player.getItemInHand() != null && player.getItemInHand().getType().equals(type);
         }
         if (player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInMainHand().getType().equals(type)) {
             return true;
         }
-        if (player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInOffHand().getType().equals(type)) {
-            return true;
-        }
-        return false;
+        return player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInOffHand().getType().equals(type);
     }
 
     public static void runCommand(final Player player, final String string) {
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                player.performCommand(string);               
-            }});
+        plugin.getServer().getScheduler().runTask(plugin, () -> player.performCommand(string));
 
     }
 }

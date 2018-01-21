@@ -300,14 +300,11 @@ public class WarpSigns implements Listener {
         saveWarpList();
         // Update warp signs
         // Run one tick later because text gets updated at the end of tick
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                plugin.getWarpPanel().addWarp(playerUUID);
-                plugin.getWarpPanel().updatePanel();
-                Bukkit.getPluginManager().callEvent(new WarpCreateEvent(plugin, loc, playerUUID));
-            }});
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            plugin.getWarpPanel().addWarp(playerUUID);
+            plugin.getWarpPanel().updatePanel();
+            Bukkit.getPluginManager().callEvent(new WarpCreateEvent(plugin, loc, playerUUID));
+        });
         return true;
     }
 
@@ -325,13 +322,7 @@ public class WarpSigns implements Listener {
         saveWarpList();
         // Update warp signs
         // Run one tick later because text gets updated at the end of tick
-        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                plugin.getWarpPanel().updatePanel();
-
-            }});
+        plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getWarpPanel().updatePanel());
     }
 
     /**
@@ -385,14 +376,8 @@ public class WarpSigns implements Listener {
      */
     public Set<UUID> listWarps() {
         // Check if any of the warp locations are null
-        Iterator<Entry<UUID, Location>> it = warpList.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<UUID, Location> en = it.next();
-            // Check if the location of the warp still exists, if not, delete it
-            if (en.getValue() == null) {
-                it.remove();
-            }
-        }
+        // Check if the location of the warp still exists, if not, delete it
+        warpList.entrySet().removeIf(en -> en.getValue() == null);
         return warpList.keySet();
     }
 

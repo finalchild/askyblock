@@ -301,11 +301,7 @@ public class NetherPortals implements Listener {
     private boolean awayFromSpawn(Player player) {
         Vector p = player.getLocation().toVector().multiply(new Vector(1, 0, 1));
         Vector spawn = player.getWorld().getSpawnLocation().toVector().multiply(new Vector(1, 0, 1));
-        if (spawn.distanceSquared(p) < (Settings.netherSpawnRadius * Settings.netherSpawnRadius)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(spawn.distanceSquared(p) < (Settings.netherSpawnRadius * Settings.netherSpawnRadius));
     }
 
     /**

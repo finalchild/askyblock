@@ -18,6 +18,7 @@
 package com.wasteofplastic.askyblock.panels;
 
 import com.wasteofplastic.askyblock.ASkyBlock;
+import com.wasteofplastic.askyblock.ASkyBlockAPI;
 import com.wasteofplastic.askyblock.Island;
 import com.wasteofplastic.askyblock.Island.SettingsFlag;
 import com.wasteofplastic.askyblock.Settings;
@@ -225,7 +226,7 @@ public class WarpPanel implements Listener {
         // Run through all the warps and add them to the inventories with nav buttons
         for (UUID playerUUID : activeWarps) {
             ItemStack icon = cachedWarps.get(playerUUID);
-            if (icon != null) {
+            if (icon != null && ASkyBlockAPI.getInstance().getLongIslandLevel(playerUUID) >= 9) {
                 warpPanel.get(panelNumber).setItem(slot++, icon);
 
                 // Check if the panel is full

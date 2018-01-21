@@ -112,63 +112,58 @@ public class TopTen implements Listener{
      * @param sender
      */
     public static void topTenCreate(final CommandSender sender) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                // This map is a list of owner and island level
-                YamlConfiguration player = new YamlConfiguration();
-                int index = 0;
-                for (final File f : plugin.getPlayersFolder().listFiles()) {
-                    // Need to remove the .yml suffix
-                    String fileName = f.getName();
-                    if (fileName.endsWith(".yml")) {
-                        try {
-                            String playerUUIDString = fileName.substring(0, fileName.length() - 4);
-                            final UUID playerUUID = UUID.fromString(playerUUIDString);
-                            if (playerUUID == null) {
-                                plugin.getLogger().warning("Player file contains erroneous UUID data.");
-                                plugin.getLogger().info("Looking at " + playerUUIDString);
-                            }
-                            player.load(f);
-                            index++;
-                            if (index % 1000 == 0) {
-                                plugin.getLogger().info("Processed " + index + " players for top ten");
-                            }
-                            // Players player = new Players(this, playerUUID);
-                            int islandLevel = player.getInt("islandLevel", 0);
-                            String teamLeaderUUID = player.getString("teamLeader", "");
-                            if (islandLevel > 0) {
-                                if (!player.getBoolean("hasTeam")) {
-                                    // Single player
-                                    topTenAddEntry(playerUUID, islandLevel);
-                                } else if (!teamLeaderUUID.isEmpty() && teamLeaderUUID.equals(playerUUIDString)) {
-                                    // Only enter team leaders into the top ten
-                                    topTenAddEntry(playerUUID, islandLevel);
-                                }
-                            }
-                        } catch (Exception e) {
-                            plugin.getLogger().severe("Error when reading player file. File is " + fileName);
-                            plugin.getLogger().severe("Look at the stack trace and edit the file - it probably has broken YAML in it for some reason.");
-                            e.printStackTrace();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            // This map is a list of owner and island level
+            YamlConfiguration player = new YamlConfiguration();
+            int index = 0;
+            for (final File f : plugin.getPlayersFolder().listFiles()) {
+                // Need to remove the .yml suffix
+                String fileName = f.getName();
+                if (fileName.endsWith(".yml")) {
+                    try {
+                        String playerUUIDString = fileName.substring(0, fileName.length() - 4);
+                        final UUID playerUUID = UUID.fromString(playerUUIDString);
+                        if (playerUUID == null) {
+                            plugin.getLogger().warning("Player file contains erroneous UUID data.");
+                            plugin.getLogger().info("Looking at " + playerUUIDString);
                         }
+                        player.load(f);
+                        index++;
+                        if (index % 1000 == 0) {
+                            plugin.getLogger().info("Processed " + index + " players for top ten");
+                        }
+                        // Players player = new Players(this, playerUUID);
+                        int islandLevel = player.getInt("islandLevel", 0);
+                        String teamLeaderUUID = player.getString("teamLeader", "");
+                        if (islandLevel > 0) {
+                            if (!player.getBoolean("hasTeam")) {
+                                // Single player
+                                topTenAddEntry(playerUUID, islandLevel);
+                            } else if (!teamLeaderUUID.isEmpty() && teamLeaderUUID.equals(playerUUIDString)) {
+                                // Only enter team leaders into the top ten
+                                topTenAddEntry(playerUUID, islandLevel);
+                            }
+                        }
+                    } catch (Exception e) {
+                        plugin.getLogger().severe("Error when reading player file. File is " + fileName);
+                        plugin.getLogger().severe("Look at the stack trace and edit the file - it probably has broken YAML in it for some reason.");
+                        e.printStackTrace();
                     }
                 }
-                plugin.getLogger().info("Processed " + index + " players for top ten");
-                // Save the top ten
-                topTenSave();
+            }
+            plugin.getLogger().info("Processed " + index + " players for top ten");
+            // Save the top ten
+            topTenSave();
 
-                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sender != null) {
-                            Util.sendMessage(sender, ChatColor.YELLOW + plugin.myLocale().adminTopTenfinished);
-                        } else {
-                            plugin.getLogger().warning("Completed top ten creation.");
-                        }
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                if (sender != null) {
+                    Util.sendMessage(sender, ChatColor.YELLOW + plugin.myLocale().adminTopTenfinished);
+                } else {
+                    plugin.getLogger().warning("Completed top ten creation.");
+                }
 
-                    }});
-            }});
+            });
+        });
     }
 
     public static void topTenSave() {
@@ -392,7 +387,6 @@ public class TopTen implements Listener{
         }
         if (event.getClick().equals(ClickType.SHIFT_RIGHT)) {
             player.closeInventory();
-            return;
         }
     }
 

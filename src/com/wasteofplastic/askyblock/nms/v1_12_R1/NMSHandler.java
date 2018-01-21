@@ -154,9 +154,7 @@ public class NMSHandler implements NMSAbstraction {
             for (String list : tag.c()) {
                 Bukkit.getLogger().info("DEBUG: list = " + list);
             }*/
-            if (tag != null && (!tag.getString("Potion").equalsIgnoreCase("minecraft:water") || tag.getString("Potion").isEmpty())) {
-                return true;
-            }
+            return tag != null && (!tag.getString("Potion").equalsIgnoreCase("minecraft:water") || tag.getString("Potion").isEmpty());
         }
         return false;
     }

@@ -458,105 +458,99 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                             final List<Entity> allEntities = ASkyBlock.getIslandWorld().getEntities();
                             final World islandWorld = ASkyBlock.getIslandWorld();
                             final World netherWorld = ASkyBlock.getNetherWorld();
-                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    Map<UUID, Multiset<EntityType>> result = new HashMap<>();
-                                    // Find out where the entities are
-                                    for (Entity entity: allEntities) {
-                                        //System.out.println("DEBUG " + entity.getType().toString());
-                                        if (entity.getLocation().getWorld().equals(islandWorld) || entity.getLocation().getWorld().equals(netherWorld)) {
-                                            //System.out.println("DEBUG in world");
-                                            if (entity instanceof Creature && !(entity instanceof Player)) {
-                                                //System.out.println("DEBUG creature");
-                                                // Find out where it is
-                                                Island island = plugin.getGrid().getIslandAt(entity.getLocation());
-                                                if (island != null && !island.isSpawn()) {
-                                                    //System.out.println("DEBUG on island");
-                                                    // Add to result
-                                                    UUID owner = island.getOwner();
-                                                    Multiset<EntityType> count = result.get(owner);
-                                                    if (count == null) {
-                                                        // New entry for owner
-                                                        //System.out.println("DEBUG new entry for owner");
-                                                        count = HashMultiset.create();
-                                                    }
-                                                    count.add(entity.getType());
-                                                    result.put(owner, count);
+                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                                Map<UUID, Multiset<EntityType>> result = new HashMap<>();
+                                // Find out where the entities are
+                                for (Entity entity: allEntities) {
+                                    //System.out.println("DEBUG " + entity.getType().toString());
+                                    if (entity.getLocation().getWorld().equals(islandWorld) || entity.getLocation().getWorld().equals(netherWorld)) {
+                                        //System.out.println("DEBUG in world");
+                                        if (entity instanceof Creature && !(entity instanceof Player)) {
+                                            //System.out.println("DEBUG creature");
+                                            // Find out where it is
+                                            Island island = plugin.getGrid().getIslandAt(entity.getLocation());
+                                            if (island != null && !island.isSpawn()) {
+                                                //System.out.println("DEBUG on island");
+                                                // Add to result
+                                                UUID owner = island.getOwner();
+                                                Multiset<EntityType> count = result.get(owner);
+                                                if (count == null) {
+                                                    // New entry for owner
+                                                    //System.out.println("DEBUG new entry for owner");
+                                                    count = HashMultiset.create();
                                                 }
+                                                count.add(entity.getType());
+                                                result.put(owner, count);
                                             }
                                         }
                                     }
-                                    // Sort by the number of entities on each island
-                                    TreeMap<Integer, List<UUID>> topEntityIslands = new TreeMap<>();
-                                    for (Entry<UUID, Multiset<EntityType>> entry : result.entrySet()) {
-                                        int numOfEntities = entry.getValue().size();
-                                        List<UUID> players = topEntityIslands.get(numOfEntities);
-                                        if (players == null) {
-                                            players = new ArrayList<>();
-                                        }
-                                        players.add(entry.getKey());
-                                        topEntityIslands.put(numOfEntities, players);
+                                }
+                                // Sort by the number of entities on each island
+                                TreeMap<Integer, List<UUID>> topEntityIslands = new TreeMap<>();
+                                for (Entry<UUID, Multiset<EntityType>> entry : result.entrySet()) {
+                                    int numOfEntities = entry.getValue().size();
+                                    List<UUID> players = topEntityIslands.get(numOfEntities);
+                                    if (players == null) {
+                                        players = new ArrayList<>();
                                     }
-                                    final TreeMap<Integer, List<UUID>> topBreeders = topEntityIslands;
-                                    final Map<UUID, Multiset<EntityType>> finalResult = result;
-                                    // Now display results in sync thread
-                                    plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            if (topBreeders.isEmpty()) {
-                                                Util.sendMessage(sender, plugin.myLocale().adminTopBreedersNothing);
-                                                return;
-                                            }
-                                            int rank = 1;
-                                            // Display, largest first
-                                            for (int numOfEntities : topBreeders.descendingKeySet()) {
-                                                // Only bother if there's more that 5 animals
-                                                if (numOfEntities > 5) {
-                                                    // There can be multiple owners in the same position
-                                                    List<UUID> owners = topBreeders.get(numOfEntities);
-                                                    // Go through the owners one by one
-                                                    for (UUID owner : owners) {
-                                                        Util.sendMessage(sender, "#" + rank + " " + plugin.getPlayers().getName(owner) + " = " + numOfEntities);
-                                                        StringBuilder content = new StringBuilder();
-                                                        Multiset<EntityType> entityCount = finalResult.get(owner);
-                                                        for (EntityType entity: entityCount.elementSet()) {
-                                                            int num = entityCount.count(entity);
-                                                            String color = ChatColor.GREEN.toString();
-                                                            if (num > 10 && num <= 20) {
-                                                                color = ChatColor.YELLOW.toString();
-                                                            } else if (num > 20 && num <= 40) {
-                                                                color = ChatColor.GOLD.toString();
-                                                            } else if (num > 40) {
-                                                                color = ChatColor.RED.toString();
-                                                            }
-                                                            content.append(Util.prettifyText(entity.toString())).append(" x ").append(color).append(num).append(ChatColor.WHITE).append(", ");
-                                                        }
-                                                        int lastComma = content.lastIndexOf(",");
-                                                        // plugin.getLogger().info("DEBUG: last comma " +
-                                                        // lastComma);
-                                                        if (lastComma > 0) {
-                                                            content = new StringBuilder(content.substring(0, lastComma));
-                                                        }
-                                                        Util.sendMessage(sender, "  " + content);
-
+                                    players.add(entry.getKey());
+                                    topEntityIslands.put(numOfEntities, players);
+                                }
+                                final TreeMap<Integer, List<UUID>> topBreeders = topEntityIslands;
+                                final Map<UUID, Multiset<EntityType>> finalResult = result;
+                                // Now display results in sync thread
+                                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                    if (topBreeders.isEmpty()) {
+                                        Util.sendMessage(sender, plugin.myLocale().adminTopBreedersNothing);
+                                        return;
+                                    }
+                                    int rank = 1;
+                                    // Display, largest first
+                                    for (int numOfEntities : topBreeders.descendingKeySet()) {
+                                        // Only bother if there's more that 5 animals
+                                        if (numOfEntities > 5) {
+                                            // There can be multiple owners in the same position
+                                            List<UUID> owners = topBreeders.get(numOfEntities);
+                                            // Go through the owners one by one
+                                            for (UUID owner : owners) {
+                                                Util.sendMessage(sender, "#" + rank + " " + plugin.getPlayers().getName(owner) + " = " + numOfEntities);
+                                                StringBuilder content = new StringBuilder();
+                                                Multiset<EntityType> entityCount = finalResult.get(owner);
+                                                for (EntityType entity : entityCount.elementSet()) {
+                                                    int num = entityCount.count(entity);
+                                                    String color = ChatColor.GREEN.toString();
+                                                    if (num > 10 && num <= 20) {
+                                                        color = ChatColor.YELLOW.toString();
+                                                    } else if (num > 20 && num <= 40) {
+                                                        color = ChatColor.GOLD.toString();
+                                                    } else if (num > 40) {
+                                                        color = ChatColor.RED.toString();
                                                     }
-                                                    rank++;
-                                                    if (rank > 10) {
-                                                        break;
-                                                    }
+                                                    content.append(Util.prettifyText(entity.toString())).append(" x ").append(color).append(num).append(ChatColor.WHITE).append(", ");
                                                 }
-                                            }
-                                            // If we didn't show anything say so
-                                            if (rank == 1) {
-                                                Util.sendMessage(sender, plugin.myLocale().adminTopBreedersNothing);
-                                            }
+                                                int lastComma = content.lastIndexOf(",");
+                                                // plugin.getLogger().info("DEBUG: last comma " +
+                                                // lastComma);
+                                                if (lastComma > 0) {
+                                                    content = new StringBuilder(content.substring(0, lastComma));
+                                                }
+                                                Util.sendMessage(sender, "  " + content);
 
-                                        }});
+                                            }
+                                            rank++;
+                                            if (rank > 10) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    // If we didn't show anything say so
+                                    if (rank == 1) {
+                                        Util.sendMessage(sender, plugin.myLocale().adminTopBreedersNothing);
+                                    }
 
-                                }});
+                                });
+
+                            });
                             return true;
                         }
             // Delete island
@@ -775,65 +769,52 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     // Set the pending flag
                     asyncPending = true;
                     // Check against player files
-                    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                        @Override
-                        public void run() {
-                            //System.out.println("DEBUG: Running async task");
-                            int done = 0;
-                            // Check files against potentialUnowned
-                            FilenameFilter ymlFilter = new FilenameFilter() {
-                                @Override
-                                public boolean accept(File dir, String name) {
-                                    String lowercaseName = name.toLowerCase();
-                                    if (lowercaseName.endsWith(".yml")) {
-                                        return true;
+                    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                        //System.out.println("DEBUG: Running async task");
+                        int done = 0;
+                        // Check files against potentialUnowned
+                        FilenameFilter ymlFilter = (dir, name) -> {
+                            String lowercaseName = name.toLowerCase();
+                            return lowercaseName.endsWith(".yml");
+                        };
+                        for (File file: playerFolder.listFiles(ymlFilter)) {
+                            List<String> playerFileContents = new ArrayList<>();
+                            done++;
+                            try {
+                                Scanner scanner = new Scanner(file);
+                                while (scanner.hasNextLine()) {
+                                    final String lineFromFile = scanner.nextLine();
+                                    if (lineFromFile.contains("resetsLeft:")) {
+                                        playerFileContents.add("resetsLeft: " + Settings.resetLimit);
                                     } else {
-                                        return false;
+                                        playerFileContents.add(lineFromFile);
                                     }
                                 }
-                            };
-                            for (File file: playerFolder.listFiles(ymlFilter)) {
-                                List<String> playerFileContents = new ArrayList<>();
-                                done++;
-                                try {
-                                    Scanner scanner = new Scanner(file);
-                                    while (scanner.hasNextLine()) {
-                                        final String lineFromFile = scanner.nextLine();
-                                        if (lineFromFile.contains("resetsLeft:")) {
-                                            playerFileContents.add("resetsLeft: " + Settings.resetLimit);
-                                        } else {
-                                            playerFileContents.add(lineFromFile);
-                                        }
-                                    }
-                                    scanner.close();
-                                    // Write file
-                                    FileWriter writer = new FileWriter(file);
-                                    for(String str: playerFileContents) {
-                                        writer.write(str + "\n");
-                                    }
-                                    writer.close();
-                                    if (done % 500 == 0) {
-                                        final int update = done;
-                                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                            @Override
-                                            public void run() {
-                                                // Tell player
-                                                Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().clearedResetLimit + " [" + update + " players]...");
-                                            }});
-                                    }
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                scanner.close();
+                                // Write file
+                                FileWriter writer = new FileWriter(file);
+                                for(String str: playerFileContents) {
+                                    writer.write(str + "\n");
                                 }
+                                writer.close();
+                                if (done % 500 == 0) {
+                                    final int update = done;
+                                    plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                        // Tell player
+                                        Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().clearedResetLimit + " [" + update + " players]...");
+                                    });
+                                }
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
                             }
-                            //System.out.println("DEBUG: scanning done");
-                            asyncPending = false;
-                            Util.sendMessage(sender, ChatColor.YELLOW + plugin.myLocale().clearedResetLimit + " [" + done + " players] completed.");
-                        }});
+                        }
+                        //System.out.println("DEBUG: scanning done");
+                        asyncPending = false;
+                        Util.sendMessage(sender, ChatColor.YELLOW + plugin.myLocale().clearedResetLimit + " [" + done + " players] completed.");
+                    });
                     return true;
                 } else {
                     Util.sendMessage(sender, ChatColor.RED + plugin.myLocale().errorUnknownCommand);
@@ -884,34 +865,25 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     // Set the pending flag
                     asyncPending = true;
                     // Change player files
-                    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                        try {
+                            Util.setPlayerYamlConfig(playerFolder, "locale", Settings.defaultLanguage);
 
-                        @Override
-                        public void run() {
-                            try {
-                                Util.setPlayerYamlConfig(playerFolder, "locale", Settings.defaultLanguage);
+                            // Run sync task
+                            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().generalSuccess);
+                                asyncPending = false;
+                            });
+                        } catch (final IOException e) {
+                            // Run sync task
+                            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                Util.sendMessage(sender, ChatColor.RED + e.getMessage());
+                                asyncPending = false;
+                            });
+                        }
+                        //System.out.println("DEBUG: scanning done");
 
-                                // Run sync task
-                                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().generalSuccess);
-                                        asyncPending = false;
-                                    }} );
-                            } catch (final IOException e) {
-                                // Run sync task
-                                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        Util.sendMessage(sender, ChatColor.RED + e.getMessage());
-                                        asyncPending = false;
-                                    }} );        
-                            }
-                            //System.out.println("DEBUG: scanning done");
-
-                        }});
+                    });
 
                     Util.sendMessage(sender, ChatColor.RED + plugin.getAvailableLocales().keySet().toString());
                 }
@@ -966,28 +938,22 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     PluginConfig.loadPluginConfig(plugin);
                     if (split[1].equalsIgnoreCase("all")) {
                         Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetInProgress);
-                        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                            for (Island island : plugin.getGrid().getOwnedIslands().values()) {
+                                island.setIgsDefaults();
+                            }
+                            for (Island island : plugin.getGrid().getUnownedIslands().values()) {
+                                island.setIgsDefaults();
+                            }
+                            plugin.getGrid().saveGrid();
+                            // Go back to non-async world
+                            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                // Reset any warp signs
+                                plugin.getWarpPanel().updateAllWarpText();
+                                Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetDone);
 
-                            @Override
-                            public void run() {
-                                for (Island island : plugin.getGrid().getOwnedIslands().values()) {
-                                    island.setIgsDefaults();
-                                }
-                                for (Island island : plugin.getGrid().getUnownedIslands().values()) {
-                                    island.setIgsDefaults();
-                                }
-                                plugin.getGrid().saveGrid();
-                                // Go back to non-async world
-                                plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        // Reset any warp signs
-                                        plugin.getWarpPanel().updateAllWarpText();
-                                        Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetDone);
-
-                                    }});
-                            }});
+                            });
+                        });
                         return true;
                     } else {
                         // Check if there is a flag here
@@ -995,30 +961,24 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                             if (split[1].equalsIgnoreCase(flag.toString())) {
                                 Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetInProgress);
                                 final SettingsFlag flagToSet = flag;
-                                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        for (Island island : plugin.getGrid().getOwnedIslands().values()) {
-                                            island.setIgsFlag(flagToSet, Settings.defaultIslandSettings.get(flagToSet));
+                                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                                    for (Island island : plugin.getGrid().getOwnedIslands().values()) {
+                                        island.setIgsFlag(flagToSet, Settings.defaultIslandSettings.get(flagToSet));
+                                    }
+                                    for (Island island : plugin.getGrid().getUnownedIslands().values()) {
+                                        island.setIgsFlag(flagToSet, Settings.defaultIslandSettings.get(flagToSet));
+                                    }
+                                    plugin.getGrid().saveGrid();
+                                    // Go back to non-async world
+                                    plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                        if (flagToSet.equals(SettingsFlag.PVP) || flagToSet.equals(SettingsFlag.NETHER_PVP)) {
+                                            // Reset any warp signs
+                                            plugin.getWarpPanel().updateAllWarpText();
                                         }
-                                        for (Island island : plugin.getGrid().getUnownedIslands().values()) {
-                                            island.setIgsFlag(flagToSet, Settings.defaultIslandSettings.get(flagToSet));
-                                        }
-                                        plugin.getGrid().saveGrid();
-                                        // Go back to non-async world
-                                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                                        Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetDone);
 
-                                            @Override
-                                            public void run() {
-                                                if (flagToSet.equals(SettingsFlag.PVP) || flagToSet.equals(SettingsFlag.NETHER_PVP)) {
-                                                    // Reset any warp signs
-                                                    plugin.getWarpPanel().updateAllWarpText();
-                                                }
-                                                Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().settingsResetDone);
-
-                                            }});
-                                    }});
+                                    });
+                                });
                                 return true;
                             }
                         }
@@ -2187,47 +2147,37 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
             // Set the pending flag
             asyncPending = true;
             // Check against player files
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    //System.out.println("DEBUG: Running async task");
-                    // Check files against potentialUnowned
-                    FilenameFilter ymlFilter = new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            String lowercaseName = name.toLowerCase();
-                            if (lowercaseName.endsWith(".yml")) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    };
-                    for (File file: playerFolder.listFiles(ymlFilter)) {
-                        try {
-                            Scanner scanner = new Scanner(file);
-                            while (scanner.hasNextLine()) {
-                                final String lineFromFile = scanner.nextLine();
-                                if (lineFromFile.contains("islandLocation:")) {
-                                    // Check against potentialUnowned list
-                                    String loc = lineFromFile.substring(lineFromFile.indexOf(' ')).trim();
-                                    //System.out.println("DEBUG: Location in player file is " + loc);
-                                    if (unowned.containsKey(loc)) {
-                                        //System.out.println("DEBUG: Location found in player file - do not delete");
-                                        unowned.remove(loc);
-                                    }
-                                    break;
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                //System.out.println("DEBUG: Running async task");
+                // Check files against potentialUnowned
+                FilenameFilter ymlFilter = (dir, name) -> {
+                    String lowercaseName = name.toLowerCase();
+                    return lowercaseName.endsWith(".yml");
+                };
+                for (File file: playerFolder.listFiles(ymlFilter)) {
+                    try {
+                        Scanner scanner = new Scanner(file);
+                        while (scanner.hasNextLine()) {
+                            final String lineFromFile = scanner.nextLine();
+                            if (lineFromFile.contains("islandLocation:")) {
+                                // Check against potentialUnowned list
+                                String loc = lineFromFile.substring(lineFromFile.indexOf(' ')).trim();
+                                //System.out.println("DEBUG: Location in player file is " + loc);
+                                if (unowned.containsKey(loc)) {
+                                    //System.out.println("DEBUG: Location found in player file - do not delete");
+                                    unowned.remove(loc);
                                 }
+                                break;
                             }
-                            scanner.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
                         }
+                        scanner.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
-                    //System.out.println("DEBUG: scanning done");
-                    asyncPending = false;
-                }});
+                }
+                //System.out.println("DEBUG: scanning done");
+                asyncPending = false;
+            });
             // Create a repeating task to check if the async task has completed
 
             new BukkitRunnable() {
@@ -2261,15 +2211,12 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                             //plugin.getLogger().info("DEBUG: unowned size after = " + unowned.size());
                             purgeUnownedConfirm = true;
                             purgeFlag = false;
-                            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    if (purgeUnownedConfirm) {
-                                        purgeUnownedConfirm = false;
-                                        Util.sendMessage(sender, plugin.myLocale().purgepurgeCancelled);
-                                    }
-                                }}, 400L);
+                            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                                if (purgeUnownedConfirm) {
+                                    purgeUnownedConfirm = false;
+                                    Util.sendMessage(sender, plugin.myLocale().purgepurgeCancelled);
+                                }
+                            }, 400L);
                         } else {
                             Util.sendMessage(sender, plugin.myLocale().purgenoneFound);
                             purgeFlag = false;
@@ -2313,7 +2260,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
         try {
             Date d = new Date(plugin.getServer().getOfflinePlayer(playerUUID).getLastPlayed());
             Util.sendMessage(sender, ChatColor.GOLD + plugin.myLocale().adminInfoLastLogin + ": " + d.toString());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().deaths + ": " + plugin.getPlayers().getDeaths(playerUUID));
         String resetsLeft = plugin.myLocale().unlimited;
@@ -2438,10 +2385,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
         String check = split[0];
         if (check.equalsIgnoreCase("confirm"))
             check = "purge";
-        if (VaultHelper.checkPerm(player2, Settings.PERMPREFIX + "admin." + check.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return VaultHelper.checkPerm(player2, Settings.PERMPREFIX + "admin." + check.toLowerCase());
     }
 
     private boolean checkModPerms(Player player2, String[] split) {
@@ -2454,10 +2398,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
         if (check.contains("challenge".toLowerCase())) {
             check = "challenges";
         }
-        if (VaultHelper.checkPerm(player2, Settings.PERMPREFIX + "mod." + check.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return VaultHelper.checkPerm(player2, Settings.PERMPREFIX + "mod." + check.toLowerCase());
     }
 
     /**

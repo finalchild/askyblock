@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -183,10 +182,7 @@ public class GridManager {
         if ((x - Settings.islandXOffset) % Settings.islandDistance != 0) {
             return false;
         }
-        if ((z - Settings.islandZOffset) % Settings.islandDistance != 0) {
-            return false;
-        }
-        return true;
+        return (z - Settings.islandZOffset) % Settings.islandDistance == 0;
     }
 
     /**
@@ -363,7 +359,7 @@ public class GridManager {
                                                         // Run through the enum and set
                                                         for (SettingsFlag flag : SettingsFlag.values()) {
                                                             if (index < split[8].length()) {
-                                                                newIsland.setIgsFlag(flag, split[8].charAt(index++) == '1' ? true : false);
+                                                                newIsland.setIgsFlag(flag, split[8].charAt(index++) == '1');
                                                             }
                                                         }
                                                     } 
@@ -481,15 +477,13 @@ public class GridManager {
         islandYaml.set(Settings.worldName, islandList);
         // Save the file
         if (async) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                public void run() {
-                    try {
-                        islandYaml.save(islandFile);
-                    } catch (Exception e) {
-                        plugin.getLogger().severe("Could not save " + ISLANDS_FILENAME + "!");
-                        //e.printStackTrace();
-                    }}
-            });
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    islandYaml.save(islandFile);
+                } catch (Exception e) {
+                    plugin.getLogger().severe("Could not save " + ISLANDS_FILENAME + "!");
+                    //e.printStackTrace();
+                }});
         } else {
             try {
                 islandYaml.save(islandFile);
@@ -539,10 +533,7 @@ public class GridManager {
         if (loc.getWorld().equals(ASkyBlock.getIslandWorld())) {
             return true;
         }
-        if (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null && loc.getWorld().equals(ASkyBlock.getNetherWorld())) {
-            return true;
-        }
-        return false;
+        return Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null && loc.getWorld().equals(ASkyBlock.getNetherWorld());
     }
 
 
@@ -699,7 +690,6 @@ public class GridManager {
                     plugin.getLogger().warning("Denied island is unowned and was just found in the islands folder. Skipping it...");
                 }
                 plugin.getLogger().warning("Recommend that the denied player file is deleted otherwise weird things can happen.");
-                return;
             } else {
                 // Add island
                 //plugin.getLogger().info("DEBUG: added island to grid at " + newIsland.getMinX() + "," + newIsland.getMinZ());
@@ -876,10 +866,7 @@ public class GridManager {
      * @return true if they are, false if they are not, or spawn does not exist
      */
     public boolean isAtSpawn(Location playerLoc) {
-        if (spawn == null) {
-            return false;
-        }
-        return spawn.onIsland(playerLoc);
+        return spawn != null && spawn.onIsland(playerLoc);
     }
 
     /**
@@ -1029,12 +1016,7 @@ public class GridManager {
         if (space1.getType().isSolid() && !space1.getType().equals(Material.SIGN_POST) && !space1.getType().equals(Material.WALL_SIGN)) {
             return false;
         }
-        if (space2.getType().isSolid()&& !space2.getType().equals(Material.SIGN_POST) && !space2.getType().equals(Material.WALL_SIGN)) {
-            return false;
-        }
-        // Safe
-        //Bukkit.getLogger().info("DEBUG: safe!");
-        return true;
+        return !space2.getType().isSolid() || space2.getType().equals(Material.SIGN_POST) || space2.getType().equals(Material.WALL_SIGN);
     }
 
     /**
@@ -1321,15 +1303,11 @@ public class GridManager {
             //plugin.getLogger().info("DEBUG: members = " + island.getMembers());
             //plugin.getLogger().info("DEBUG: player UUID = " + player.getUniqueId());
 
-            if (island.onIsland(loc) && island.getMembers().contains(player.getUniqueId())) {
-                //plugin.getLogger().info("DEBUG: allowed");
-                // In a protected zone but is on the list of acceptable players
-                return true;
-            } else {
-                // Not allowed
-                //plugin.getLogger().info("DEBUG: not allowed");
-                return false;
-            }
+            //plugin.getLogger().info("DEBUG: allowed");
+// In a protected zone but is on the list of acceptable players
+// Not allowed
+//plugin.getLogger().info("DEBUG: not allowed");
+            return island.onIsland(loc) && island.getMembers().contains(player.getUniqueId());
         } else {
             //plugin.getLogger().info("DEBUG: no island at this location");
         }
@@ -1518,12 +1496,10 @@ public class GridManager {
                     protectionRange = island.getProtectionSize();
                 }
             }
-            if (target.getLocation().getX() > islandTestLocation.getX() - protectionRange / 2
+            return target.getLocation().getX() > islandTestLocation.getX() - protectionRange / 2
                     && target.getLocation().getX() < islandTestLocation.getX() + protectionRange / 2
                     && target.getLocation().getZ() > islandTestLocation.getZ() - protectionRange / 2
-                    && target.getLocation().getZ() < islandTestLocation.getZ() + protectionRange / 2) {
-                return true;
-            }
+                    && target.getLocation().getZ() < islandTestLocation.getZ() + protectionRange / 2;
 
         }
         return false;

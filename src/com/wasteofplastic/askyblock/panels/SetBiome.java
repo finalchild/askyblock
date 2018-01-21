@@ -81,55 +81,48 @@ public class SetBiome {
             }
             //plugin.getLogger().info("DEBUG: size of chunk ss = " + chunkSnapshot.size());
             final List<ChunkSnapshot> finalChunk = chunkSnapshot;
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                @SuppressWarnings("deprecation")
-                @Override
-                public void run() {
-                    //System.out.println("DEBUG: running async task");
-                    HashMap<Vector,Integer> blocksToRemove = new HashMap<>();
-                    // Go through island space and find the offending columns
-                    for (ChunkSnapshot chunk: finalChunk) {
-                        for (int x = 0; x< 16; x++) {
-                            for (int z = 0; z < 16; z++) {
-                                // Check if it is snow, ice or water
-                                for (int yy = world.getMaxHeight()-1; yy >= Settings.seaHeight; yy--) {
-                                    int type = chunk.getBlockTypeId(x, yy, z);
-                                    if (type == Material.ICE.getId() || type == Material.SNOW.getId() || type == Material.SNOW_BLOCK.getId()
-                                            || type == Material.WATER.getId() || type == Material.STATIONARY_WATER.getId()) {
-                                        //System.out.println("DEBUG: offending block found " + Material.getMaterial(type) + " @ " + (chunk.getX()*16 + x) + " " + yy + " " + (chunk.getZ()*16 + z));
-                                        blocksToRemove.put(new Vector(chunk.getX()*16 + x,yy,chunk.getZ()*16 + z), type);
-                                    } else if (type != Material.AIR.getId()){
-                                        // Hit a non-offending block so break and store this column of vectors
-                                        break;
-                                    }
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                //System.out.println("DEBUG: running async task");
+                HashMap<Vector,Integer> blocksToRemove = new HashMap<>();
+                // Go through island space and find the offending columns
+                for (ChunkSnapshot chunk: finalChunk) {
+                    for (int x = 0; x< 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            // Check if it is snow, ice or water
+                            for (int yy = world.getMaxHeight()-1; yy >= Settings.seaHeight; yy--) {
+                                int type = chunk.getBlockTypeId(x, yy, z);
+                                if (type == Material.ICE.getId() || type == Material.SNOW.getId() || type == Material.SNOW_BLOCK.getId()
+                                        || type == Material.WATER.getId() || type == Material.STATIONARY_WATER.getId()) {
+                                    //System.out.println("DEBUG: offending block found " + Material.getMaterial(type) + " @ " + (chunk.getX()*16 + x) + " " + yy + " " + (chunk.getZ()*16 + z));
+                                    blocksToRemove.put(new Vector(chunk.getX()*16 + x,yy,chunk.getZ()*16 + z), type);
+                                } else if (type != Material.AIR.getId()){
+                                    // Hit a non-offending block so break and store this column of vectors
+                                    break;
                                 }
                             }
                         }
                     }
-                    // Now get rid of the blocks
-                    if (!blocksToRemove.isEmpty()) {
-                        //plugin.getLogger().info("DEBUG: There are blocks to remove "  + blocksToRemove.size());
-                        final HashMap<Vector, Integer> blocks = blocksToRemove;
-                        // Kick of a sync task
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                //plugin.getLogger().info("DEBUG: Running sync task");
-                                for (Entry<Vector, Integer> entry: blocks.entrySet()) {
-                                    if (entry.getValue() == Material.WATER.getId() || entry.getValue() == Material.STATIONARY_WATER.getId()) {
-                                        if (biomeType.equals(Biome.HELL)) {
-                                            // Remove water from Hell   
-                                            entry.getKey().toLocation(world).getBlock().setType(Material.AIR);
-                                        }
-                                    } else {
-                                        entry.getKey().toLocation(world).getBlock().setType(Material.AIR);
-                                    }
+                }
+                // Now get rid of the blocks
+                if (!blocksToRemove.isEmpty()) {
+                    //plugin.getLogger().info("DEBUG: There are blocks to remove "  + blocksToRemove.size());
+                    final HashMap<Vector, Integer> blocks = blocksToRemove;
+                    // Kick of a sync task
+                    plugin.getServer().getScheduler().runTask(plugin, () -> {
+                        //plugin.getLogger().info("DEBUG: Running sync task");
+                        for (Entry<Vector, Integer> entry : blocks.entrySet()) {
+                            if (entry.getValue() == Material.WATER.getId() || entry.getValue() == Material.STATIONARY_WATER.getId()) {
+                                if (biomeType.equals(Biome.HELL)) {
+                                    // Remove water from Hell
+                                    entry.getKey().toLocation(world).getBlock().setType(Material.AIR);
                                 }
-                            }});
-                    }
-                }});
+                            } else {
+                                entry.getKey().toLocation(world).getBlock().setType(Material.AIR);
+                            }
+                        }
+                    });
+                }
+            });
         default:
         }
     }

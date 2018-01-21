@@ -34,16 +34,16 @@ public interface NMSAbstraction {
      * @param data
      * @param applyPhysics
      */
-    public void setBlockSuperFast(Block block, int blockId, byte data, boolean applyPhysics);
+    void setBlockSuperFast(Block block, int blockId, byte data, boolean applyPhysics);
 
-    public ItemStack setBook(Tag item);
+    ItemStack setBook(Tag item);
 
     /**
      * Sets a block to be an item stack
      * @param block
      * @param itemStack
      */
-    public void setFlowerPotBlock(Block block, ItemStack itemStack);
+    void setFlowerPotBlock(Block block, ItemStack itemStack);
 
     boolean isPotion(ItemStack item);
 
@@ -54,7 +54,7 @@ public interface NMSAbstraction {
      * @param chestItem
      * @return
      */
-    public ItemStack setPotion(Material itemMaterial, Tag itemTag, ItemStack chestItem);
+    ItemStack setPotion(Material itemMaterial, Tag itemTag, ItemStack chestItem);
     
     /**
      * Gets a monster egg itemstack
@@ -62,5 +62,5 @@ public interface NMSAbstraction {
      * @param amount
      * @return itemstack
      */
-    public ItemStack getSpawnEgg(EntityType type, int amount);
+    ItemStack getSpawnEgg(EntityType type, int amount);
 }

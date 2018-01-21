@@ -63,10 +63,7 @@ public class NMSHandler implements NMSAbstraction {
 
     @Override
     public boolean isPotion(ItemStack item) {
-        if (item.getType().equals(Material.POTION) && item.getDurability() != 0) {
-            return true;
-        }
-        return false;
+        return item.getType().equals(Material.POTION) && item.getDurability() != 0;
     }
 
     @SuppressWarnings("deprecation")

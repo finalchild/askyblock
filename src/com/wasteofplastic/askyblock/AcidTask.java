@@ -32,31 +32,28 @@ public class AcidTask {
         // because it
         // is acid
         if (Settings.mobAcidDamage > 0D || Settings.animalAcidDamage > 0D) {
-            plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    List<Entity> entList = ASkyBlock.getIslandWorld().getEntities();
-                    for (Entity current : entList) {
-                        if (plugin.isOnePointEight() && current instanceof Guardian) {
-                            // Guardians are immune to acid too
-                            continue;
+            plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+                List<Entity> entList = ASkyBlock.getIslandWorld().getEntities();
+                for (Entity current : entList) {
+                    if (plugin.isOnePointEight() && current instanceof Guardian) {
+                        // Guardians are immune to acid too
+                        continue;
+                    }
+                    if ((current instanceof Monster) && Settings.mobAcidDamage > 0D) {
+                        if ((current.getLocation().getBlock().getType() == Material.WATER)
+                                || (current.getLocation().getBlock().getType() == Material.STATIONARY_WATER)) {
+                            ((Monster) current).damage(Settings.mobAcidDamage);
+                            // getLogger().info("Killing monster");
                         }
-                        if ((current instanceof Monster) && Settings.mobAcidDamage > 0D) {
-                            if ((current.getLocation().getBlock().getType() == Material.WATER)
-                                    || (current.getLocation().getBlock().getType() == Material.STATIONARY_WATER)) {
-                                ((Monster) current).damage(Settings.mobAcidDamage);
-                                // getLogger().info("Killing monster");
+                    } else if ((current instanceof Animals) && Settings.animalAcidDamage > 0D) {
+                        if ((current.getLocation().getBlock().getType() == Material.WATER)
+                                || (current.getLocation().getBlock().getType() == Material.STATIONARY_WATER)) {
+                            if (!current.getType().equals(EntityType.CHICKEN)) {
+                                ((Animals) current).damage(Settings.animalAcidDamage);
+                            } else if (Settings.damageChickens) {
+                                ((Animals) current).damage(Settings.animalAcidDamage);
                             }
-                        } else if ((current instanceof Animals) && Settings.animalAcidDamage > 0D) {
-                            if ((current.getLocation().getBlock().getType() == Material.WATER)
-                                    || (current.getLocation().getBlock().getType() == Material.STATIONARY_WATER)) {
-                                if (!current.getType().equals(EntityType.CHICKEN)) {
-                                    ((Animals) current).damage(Settings.animalAcidDamage);
-                                } else if (Settings.damageChickens) {
-                                    ((Animals) current).damage(Settings.animalAcidDamage);
-                                }
-                                // getLogger().info("Killing animal");
-                            }
+                            // getLogger().info("Killing animal");
                         }
                     }
                 }

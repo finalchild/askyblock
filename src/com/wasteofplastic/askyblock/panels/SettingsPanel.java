@@ -304,15 +304,12 @@ public class SettingsPanel implements Listener {
                         // Update warp signs
                         final List<UUID> members = island.getMembers();
                         // Run one tick later because text gets updated at the end of tick
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                        plugin.getServer().getScheduler().runTask(plugin, () -> {
+                            for (UUID playerUUID : members) {
+                                plugin.getWarpPanel().updateWarp(playerUUID);
+                            }
 
-                            @Override
-                            public void run() {
-                                for (UUID playerUUID : members) {
-                                    plugin.getWarpPanel().updateWarp(playerUUID);
-                                }
-
-                            }});
+                        });
 
                         return;
                     } else {
@@ -324,15 +321,12 @@ public class SettingsPanel implements Listener {
                         // Update warp signs
                         final List<UUID> members = island.getMembers();
                         // Run one tick later because text gets updated at the end of tick
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                        plugin.getServer().getScheduler().runTask(plugin, () -> {
+                            for (UUID playerUUID : members) {
+                                plugin.getWarpPanel().updateWarp(playerUUID);
+                            }
 
-                            @Override
-                            public void run() {
-                                for (UUID playerUUID : members) {
-                                    plugin.getWarpPanel().updateWarp(playerUUID);
-                                }
-
-                            }});
+                        });
                         // Warn players of change
                         for (Player p : plugin.getServer().getOnlinePlayers()) {
                             if (island.onIsland(p.getLocation())) {

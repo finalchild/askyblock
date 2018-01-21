@@ -45,7 +45,7 @@ public class IPItem {
 
     public enum Type {
         INFO, TOGGLE
-    };
+    }
 
     // Info icons
     /**

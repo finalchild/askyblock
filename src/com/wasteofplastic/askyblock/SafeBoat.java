@@ -198,7 +198,6 @@ public class SafeBoat implements Listener {
         } else {
             exitedBoat.put(player.getUniqueId(), boat);
         }
-        return;
     }
 
     /**

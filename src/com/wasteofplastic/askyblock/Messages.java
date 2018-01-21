@@ -78,10 +78,8 @@ public class Messages {
             // Convert to YAML
             messageStore.set("messages", offlineMessages);
             Util.saveYamlFile(messageStore, "messages.yml");
-            return;
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 

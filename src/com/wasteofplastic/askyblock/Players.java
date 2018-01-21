@@ -137,7 +137,7 @@ public class Players {
         for (String uuidString : banListString) {
             try {
                 banList.add(UUID.fromString(uuidString));
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
         }
         // plugin.getLogger().info("Loading player..." + playerName);
         this.hasIsland = playerInfo.getBoolean("hasIsland", false);
@@ -469,11 +469,7 @@ public class Players {
      * @return Location of this home or null if not available
      */
     public Location getHomeLocation(int number) {
-        if (homeLocations.containsKey(number)) {
-            return homeLocations.get(number);
-        } else {
-            return null;
-        }
+        return homeLocations.getOrDefault(number, null);
     }
 
     /**

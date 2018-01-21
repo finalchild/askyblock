@@ -202,7 +202,6 @@ public class BiomesPanel implements Listener {
             Util.sendMessage(player, ChatColor.GREEN + plugin.myLocale(player.getUniqueId()).biomeSet.replace("[biome]", thisPanel.get(slot).getName()));
             Util.sendMessage(player, ChatColor.GREEN + plugin.myLocale(player.getUniqueId()).needRelog);
         }
-        return;
     }
 
 

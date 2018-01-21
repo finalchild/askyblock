@@ -377,7 +377,7 @@ public class CoopPlay {
                 final CoopLeaveEvent event = new CoopLeaveEvent(targetPlayerUUID, requester.getUniqueId(), coopIsland);
                 plugin.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
-                    removed = coopPlayers.get(targetPlayerUUID).remove(coopIsland.getCenter()) != null ? true: false;
+                    removed = coopPlayers.get(targetPlayerUUID).remove(coopIsland.getCenter()) != null;
                 }
             }
         }
