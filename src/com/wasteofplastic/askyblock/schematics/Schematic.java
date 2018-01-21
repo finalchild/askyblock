@@ -21,14 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -93,9 +86,9 @@ public class Schematic {
     private short width;
     private short length;
     private short height;
-    private Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<BlockVector, Map<String, Tag>>();
+    private Map<BlockVector, Map<String, Tag>> tileEntitiesMap = new HashMap<>();
     //private HashMap<BlockVector, EntityType> entitiesMap = new HashMap<BlockVector, EntityType>();
-    private List<EntityObject> entitiesList = new ArrayList<EntityObject>();
+    private List<EntityObject> entitiesList = new ArrayList<>();
     private File file;
     private String heading;
     private String name;
@@ -124,10 +117,10 @@ public class Schematic {
     private Vector playerSpawn;
     //private Material playerSpawnBlock;
     private NMSAbstraction nms;
-    private Set<Integer> attachable = new HashSet<Integer>();
-    private Map<String, Art> paintingList = new HashMap<String, Art>();
-    private Map<Byte, BlockFace> facingList = new HashMap<Byte, BlockFace>();
-    private Map<Byte, Rotation> rotationList = new HashMap<Byte, Rotation>();
+    private Set<Integer> attachable = new HashSet<>();
+    private Map<String, Art> paintingList = new HashMap<>();
+    private Map<Byte, BlockFace> facingList = new HashMap<>();
+    private Map<Byte, Rotation> rotationList = new HashMap<>();
     private List<IslandBlock> islandBlocks;
     //private boolean pasteAir;
     private int durability;
@@ -162,7 +155,7 @@ public class Schematic {
         biome = Settings.defaultBiome;
         usePhysics = Settings.usePhysics;
         file = null;
-        islandCompanion = new ArrayList<EntityType>();
+        islandCompanion = new ArrayList<>();
         islandCompanion.add(Settings.islandCompanion);
         companionNames = Settings.companionNames;
         defaultChestItems = Settings.chestItems;
@@ -192,7 +185,7 @@ public class Schematic {
         useDefaultChest = true;
         biome = Settings.defaultBiome;
         usePhysics = Settings.usePhysics;
-        islandCompanion = new ArrayList<EntityType>();
+        islandCompanion = new ArrayList<>();
         islandCompanion.add(Settings.islandCompanion);
         companionNames = Settings.companionNames;
         defaultChestItems = Settings.chestItems;
@@ -400,128 +393,151 @@ public class Schematic {
                         }
                     }
 
-                    if (entry.getKey().equals("Pos")) {
-                        //Bukkit.getLogger().info("DEBUG Pos fond");
-                        if (entry.getValue() instanceof ListTag) {
-                            //Bukkit.getLogger().info("DEBUG coord found");
-                            List<Tag> pos = new ArrayList<Tag>();
-                            pos = ((ListTag) entry.getValue()).getValue();
-                            //Bukkit.getLogger().info("DEBUG pos: " + pos);
-                            if (pos.size() == 3) {                               
-                                double x = (double)pos.get(0).getValue() - origin.getX();
-                                double y = (double)pos.get(1).getValue() - origin.getY();
-                                double z = (double)pos.get(2).getValue() - origin.getZ();
-                                ent.setLocation(new BlockVector(x,y,z));
-                            } else {
-                                ent.setLocation(new BlockVector(0,0,0));
+                    switch (entry.getKey()) {
+                        case "Pos":
+                            //Bukkit.getLogger().info("DEBUG Pos fond");
+                            if (entry.getValue() instanceof ListTag) {
+                                //Bukkit.getLogger().info("DEBUG coord found");
+                                List<Tag> pos = new ArrayList<>();
+                                pos = ((ListTag) entry.getValue()).getValue();
+                                //Bukkit.getLogger().info("DEBUG pos: " + pos);
+                                if (pos.size() == 3) {
+                                    double x = (double) pos.get(0).getValue() - origin.getX();
+                                    double y = (double) pos.get(1).getValue() - origin.getY();
+                                    double z = (double) pos.get(2).getValue() - origin.getZ();
+                                    ent.setLocation(new BlockVector(x, y, z));
+                                } else {
+                                    ent.setLocation(new BlockVector(0, 0, 0));
+                                }
                             }
-                        }
-                    } else if (entry.getKey().equals("Motion")) {
-                        //Bukkit.getLogger().info("DEBUG Pos fond");
-                        if (entry.getValue() instanceof ListTag) {
-                            //Bukkit.getLogger().info("DEBUG coord found");
-                            List<Tag> pos = new ArrayList<Tag>();
-                            pos = ((ListTag) entry.getValue()).getValue();
-                            //Bukkit.getLogger().info("DEBUG pos: " + pos);
-                            if (pos.size() == 3) {
-                                ent.setMotion(new Vector((double)pos.get(0).getValue(), (double)pos.get(1).getValue()
-                                        ,(double)pos.get(2).getValue()));
-                            } else {
-                                ent.setMotion(new Vector(0,0,0));
+                            break;
+                        case "Motion":
+                            //Bukkit.getLogger().info("DEBUG Pos fond");
+                            if (entry.getValue() instanceof ListTag) {
+                                //Bukkit.getLogger().info("DEBUG coord found");
+                                List<Tag> pos = new ArrayList<>();
+                                pos = ((ListTag) entry.getValue()).getValue();
+                                //Bukkit.getLogger().info("DEBUG pos: " + pos);
+                                if (pos.size() == 3) {
+                                    ent.setMotion(new Vector((double) pos.get(0).getValue(), (double) pos.get(1).getValue()
+                                            , (double) pos.get(2).getValue()));
+                                } else {
+                                    ent.setMotion(new Vector(0, 0, 0));
+                                }
                             }
-                        }
-                    } else if (entry.getKey().equals("Rotation")) {
-                        //Bukkit.getLogger().info("DEBUG Pos fond");
-                        if (entry.getValue() instanceof ListTag) {
-                            //Bukkit.getLogger().info("DEBUG coord found");
-                            List<Tag> pos = new ArrayList<Tag>();
-                            pos = ((ListTag) entry.getValue()).getValue();
-                            //Bukkit.getLogger().info("DEBUG pos: " + pos);
-                            if (pos.size() == 2) {
-                                ent.setYaw((float)pos.get(0).getValue());
-                                ent.setPitch((float)pos.get(1).getValue());
-                            } else {
-                                ent.setYaw(0F);
-                                ent.setPitch(0F);
+                            break;
+                        case "Rotation":
+                            //Bukkit.getLogger().info("DEBUG Pos fond");
+                            if (entry.getValue() instanceof ListTag) {
+                                //Bukkit.getLogger().info("DEBUG coord found");
+                                List<Tag> pos = new ArrayList<>();
+                                pos = ((ListTag) entry.getValue()).getValue();
+                                //Bukkit.getLogger().info("DEBUG pos: " + pos);
+                                if (pos.size() == 2) {
+                                    ent.setYaw((float) pos.get(0).getValue());
+                                    ent.setPitch((float) pos.get(1).getValue());
+                                } else {
+                                    ent.setYaw(0F);
+                                    ent.setPitch(0F);
+                                }
                             }
-                        }
-                    } else if (entry.getKey().equals("Color")) {
-                        if (entry.getValue() instanceof ByteTag) {
-                            ent.setColor(((ByteTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("Sheared")) {
-                        if (entry.getValue() instanceof ByteTag) {
-                            if (((ByteTag) entry.getValue()).getValue() != (byte)0) {
-                                ent.setSheared(true);
-                            } else {
-                                ent.setSheared(false);
+                            break;
+                        case "Color":
+                            if (entry.getValue() instanceof ByteTag) {
+                                ent.setColor(((ByteTag) entry.getValue()).getValue());
                             }
-                        }
-                    } else if (entry.getKey().equals("RabbitType")) {
-                        if (entry.getValue() instanceof IntTag) {
-                            ent.setRabbitType(((IntTag)entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("Profession")) {
-                        if (entry.getValue() instanceof IntTag) {
-                            ent.setProfession(((IntTag)entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("CarryingChest")) {
-                        if (entry.getValue() instanceof ByteTag) {
-                            ent.setCarryingChest(((ByteTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("OwnerUUID")) {
-                        ent.setOwned(true);
-                    } else if (entry.getKey().equals("CollarColor")) {
-                        if (entry.getValue() instanceof ByteTag) {
-                            ent.setCollarColor(((ByteTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("Facing")) {
-                        if (entry.getValue() instanceof ByteTag) {
-                            ent.setFacing(((ByteTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("Motive")) {
-                        if (entry.getValue() instanceof StringTag) {
-                            ent.setMotive(((StringTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("ItemDropChance")) {
-                        if (entry.getValue() instanceof FloatTag) {
-                            ent.setItemDropChance(((FloatTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("ItemRotation")) {
-                        if (entry.getValue() instanceof ByteTag){
-                            ent.setItemRotation(((ByteTag) entry.getValue()).getValue());
-                        }
-                    } else if (entry.getKey().equals("Item")) {
-                        if (entry.getValue() instanceof CompoundTag) {
-                            CompoundTag itemTag = (CompoundTag) entry.getValue();
-                            for (Map.Entry<String, Tag> itemEntry : itemTag.getValue().entrySet()) {
-                                if (itemEntry.getKey().equals("Count")){
-                                    if (itemEntry.getValue() instanceof ByteTag){
-                                        ent.setCount(((ByteTag) itemEntry.getValue()).getValue());
+                            break;
+                        case "Sheared":
+                            if (entry.getValue() instanceof ByteTag) {
+                                if (((ByteTag) entry.getValue()).getValue() != (byte) 0) {
+                                    ent.setSheared(true);
+                                } else {
+                                    ent.setSheared(false);
+                                }
+                            }
+                            break;
+                        case "RabbitType":
+                            if (entry.getValue() instanceof IntTag) {
+                                ent.setRabbitType(((IntTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "Profession":
+                            if (entry.getValue() instanceof IntTag) {
+                                ent.setProfession(((IntTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "CarryingChest":
+                            if (entry.getValue() instanceof ByteTag) {
+                                ent.setCarryingChest(((ByteTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "OwnerUUID":
+                            ent.setOwned(true);
+                            break;
+                        case "CollarColor":
+                            if (entry.getValue() instanceof ByteTag) {
+                                ent.setCollarColor(((ByteTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "Facing":
+                            if (entry.getValue() instanceof ByteTag) {
+                                ent.setFacing(((ByteTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "Motive":
+                            if (entry.getValue() instanceof StringTag) {
+                                ent.setMotive(((StringTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "ItemDropChance":
+                            if (entry.getValue() instanceof FloatTag) {
+                                ent.setItemDropChance(((FloatTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "ItemRotation":
+                            if (entry.getValue() instanceof ByteTag) {
+                                ent.setItemRotation(((ByteTag) entry.getValue()).getValue());
+                            }
+                            break;
+                        case "Item":
+                            if (entry.getValue() instanceof CompoundTag) {
+                                CompoundTag itemTag = (CompoundTag) entry.getValue();
+                                for (Map.Entry<String, Tag> itemEntry : itemTag.getValue().entrySet()) {
+                                    switch (itemEntry.getKey()) {
+                                        case "Count":
+                                            if (itemEntry.getValue() instanceof ByteTag) {
+                                                ent.setCount(((ByteTag) itemEntry.getValue()).getValue());
+                                            }
+                                            break;
+                                        case "Damage":
+                                            if (itemEntry.getValue() instanceof ShortTag) {
+                                                ent.setDamage(((ShortTag) itemEntry.getValue()).getValue());
+                                            }
+                                            break;
+                                        case "id":
+                                            if (itemEntry.getValue() instanceof StringTag) {
+                                                ent.setId(((StringTag) itemEntry.getValue()).getValue());
+                                            }
+                                            break;
                                     }
-                                } else if (itemEntry.getKey().equals("Damage")){
-                                    if (itemEntry.getValue() instanceof ShortTag){
-                                        ent.setDamage(((ShortTag) itemEntry.getValue()).getValue());
-                                    }
-                                } else if (itemEntry.getKey().equals("id")){
-                                    if (itemEntry.getValue() instanceof StringTag){
-                                        ent.setId(((StringTag) itemEntry.getValue()).getValue());
-                                    }
-                                } 
+                                }
                             }
-                        }
-                    } else if (entry.getKey().equals("TileX")){
-                        if (entry.getValue() instanceof IntTag){
-                            ent.setTileX((double)((IntTag)entry.getValue()).getValue() - origin.getX());
-                        }
-                    } else if (entry.getKey().equals("TileY")){
-                        if (entry.getValue() instanceof IntTag){
-                            ent.setTileY((double)((IntTag)entry.getValue()).getValue() - origin.getY());
-                        }
-                    } else if (entry.getKey().equals("TileZ")){
-                        if (entry.getValue() instanceof IntTag){
-                            ent.setTileZ((double)((IntTag)entry.getValue()).getValue() - origin.getZ());
-                        }
+                            break;
+                        case "TileX":
+                            if (entry.getValue() instanceof IntTag) {
+                                ent.setTileX((double) ((IntTag) entry.getValue()).getValue() - origin.getX());
+                            }
+                            break;
+                        case "TileY":
+                            if (entry.getValue() instanceof IntTag) {
+                                ent.setTileY((double) ((IntTag) entry.getValue()).getValue() - origin.getY());
+                            }
+                            break;
+                        case "TileZ":
+                            if (entry.getValue() instanceof IntTag) {
+                                ent.setTileZ((double) ((IntTag) entry.getValue()).getValue() - origin.getZ());
+                            }
+                            break;
                     }
                 }
 
@@ -546,21 +562,25 @@ public class Schematic {
                 int y = 0;
                 int z = 0;
 
-                Map<String, Tag> values = new HashMap<String, Tag>();
+                Map<String, Tag> values = new HashMap<>();
 
                 for (Map.Entry<String, Tag> entry : t.getValue().entrySet()) {
-                    if (entry.getKey().equals("x")) {
-                        if (entry.getValue() instanceof IntTag) {
-                            x = ((IntTag) entry.getValue()).getValue();
-                        }
-                    } else if (entry.getKey().equals("y")) {
-                        if (entry.getValue() instanceof IntTag) {
-                            y = ((IntTag) entry.getValue()).getValue();
-                        }
-                    } else if (entry.getKey().equals("z")) {
-                        if (entry.getValue() instanceof IntTag) {
-                            z = ((IntTag) entry.getValue()).getValue();
-                        }
+                    switch (entry.getKey()) {
+                        case "x":
+                            if (entry.getValue() instanceof IntTag) {
+                                x = ((IntTag) entry.getValue()).getValue();
+                            }
+                            break;
+                        case "y":
+                            if (entry.getValue() instanceof IntTag) {
+                                y = ((IntTag) entry.getValue()).getValue();
+                            }
+                            break;
+                        case "z":
+                            if (entry.getValue() instanceof IntTag) {
+                                z = ((IntTag) entry.getValue()).getValue();
+                            }
+                            break;
                     }
 
                     values.put(entry.getKey(), entry.getValue());
@@ -579,7 +599,7 @@ public class Schematic {
         // Find top most bedrock - this is the key stone
         // Find top most chest
         // Find top most grass
-        List<Vector> grassBlocks = new ArrayList<Vector>();
+        List<Vector> grassBlocks = new ArrayList<>();
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
@@ -587,32 +607,37 @@ public class Schematic {
                     // Bukkit.getLogger().info("DEBUG " + index +
                     // " changing to ID:"+blocks[index] + " data = " +
                     // blockData[index]);
-                    if (blocks[index] == 7) {
-                        // Last bedrock
-                        if (bedrock == null || bedrock.getY() < y) {
-                            bedrock = new Vector(x, y, z);
-                            //Bukkit.getLogger().info("DEBUG higher bedrock found:" + bedrock.toString());
-                        }
-                    } else if (blocks[index] == 54) {
-                        // Last chest
-                        if (chest == null || chest.getY() < y) {
-                            chest = new Vector(x, y, z);
-                            // Bukkit.getLogger().info("Island loc:" +
-                            // loc.toString());
-                            // Bukkit.getLogger().info("Chest relative location is "
-                            // + chest.toString());
-                        }
-                    } else if (blocks[index] == 63) {
-                        // Sign
-                        if (welcomeSign == null || welcomeSign.getY() < y) {
-                            welcomeSign = new Vector(x, y, z);
-                            // Bukkit.getLogger().info("DEBUG higher sign found:"
-                            // + welcomeSign.toString());
-                        }
-                    } else if (blocks[index] == 2) {
-                        // Grass
-                        grassBlocks.add(new Vector(x,y,z));
-                    } 
+                    switch (blocks[index]) {
+                        case 7:
+                            // Last bedrock
+                            if (bedrock == null || bedrock.getY() < y) {
+                                bedrock = new Vector(x, y, z);
+                                //Bukkit.getLogger().info("DEBUG higher bedrock found:" + bedrock.toString());
+                            }
+                            break;
+                        case 54:
+                            // Last chest
+                            if (chest == null || chest.getY() < y) {
+                                chest = new Vector(x, y, z);
+                                // Bukkit.getLogger().info("Island loc:" +
+                                // loc.toString());
+                                // Bukkit.getLogger().info("Chest relative location is "
+                                // + chest.toString());
+                            }
+                            break;
+                        case 63:
+                            // Sign
+                            if (welcomeSign == null || welcomeSign.getY() < y) {
+                                welcomeSign = new Vector(x, y, z);
+                                // Bukkit.getLogger().info("DEBUG higher sign found:"
+                                // + welcomeSign.toString());
+                            }
+                            break;
+                        case 2:
+                            // Grass
+                            grassBlocks.add(new Vector(x, y, z));
+                            break;
+                    }
                 }
             }
         }
@@ -623,7 +648,7 @@ public class Schematic {
         // Find other key blocks
         if (!grassBlocks.isEmpty()) {
             // Sort by height
-            List<Vector> sorted = new ArrayList<Vector>();
+            List<Vector> sorted = new ArrayList<>();
             for (Vector v : grassBlocks) {
                 //if (GridManager.isSafeLocation(v.toLocation(world))) {
                 // Add to sorted list
@@ -827,146 +852,151 @@ public class Schematic {
                 entitySpot.setPitch(ent.getPitch());
                 entitySpot.setYaw(ent.getYaw());
                 //Bukkit.getLogger().info("DEBUG: Entity type = " + ent.getType());
-                if(ent.getType() == EntityType.PAINTING){
+                switch (ent.getType()) {
+                    case PAINTING:
 
-                    //Bukkit.getLogger().info("DEBUG: painting = " + ent.getMotive() + "; facing = " + ent.getFacing());
-                    //Bukkit.getLogger().info("DEBUG: spawning " + ent.getType().toString() + " at " + entitySpot);
-                    try {
-                        Painting painting = blockLoc.getWorld().spawn(entitySpot, Painting.class);
-                        if (painting != null) {
-                            if(paintingList.containsKey(ent.getMotive())){
-                                //painting.setArt(Art.GRAHAM);
-                                painting.setArt(paintingList.get(ent.getMotive()), true);
-                            } else {
-                                // Set default
-                                painting.setArt(Art.ALBAN, true);
+                        //Bukkit.getLogger().info("DEBUG: painting = " + ent.getMotive() + "; facing = " + ent.getFacing());
+                        //Bukkit.getLogger().info("DEBUG: spawning " + ent.getType().toString() + " at " + entitySpot);
+                        try {
+                            Painting painting = blockLoc.getWorld().spawn(entitySpot, Painting.class);
+                            if (painting != null) {
+                                if (paintingList.containsKey(ent.getMotive())) {
+                                    //painting.setArt(Art.GRAHAM);
+                                    painting.setArt(paintingList.get(ent.getMotive()), true);
+                                } else {
+                                    // Set default
+                                    painting.setArt(Art.ALBAN, true);
+                                }
+
+                                // http://minecraft.gamepedia.com/Painting#Data_values
+                                if (facingList.containsKey(ent.getFacing())) {
+                                    painting.setFacingDirection(facingList.get(ent.getFacing()), true);
+                                } else {
+                                    //set default direction
+                                    painting.setFacingDirection(BlockFace.NORTH, true);
+                                }
+                                //Bukkit.getLogger().info("DEBUG: Painting setFacingDirection: " + painting.getLocation().toString() + "; facing: " + painting.getFacing() + "; ent facing: " + ent.getFacing());
+                                //Bukkit.getLogger().info("DEBUG: Painting setArt: " + painting.getLocation().toString() + "; art: " + painting.getArt() + "; ent motive: " + ent.getMotive());
+
+                            }
+                        } catch (IllegalArgumentException e) {
+                            //plugin.getLogger().warning("Cannot paste painting from schematic");
+                        }
+                        break;
+                    case ITEM_FRAME:
+
+                        //Bukkit.getLogger().info("DEBUG: spawning itemframe at" + entitySpot.toString());
+
+                        //Bukkit.getLogger().info("DEBUG: tileX: " + ent.getTileX() + ", tileY: " + ent.getTileY() + ", tileZ: " + ent.getTileZ());
+
+                        ItemFrame itemFrame = (ItemFrame) blockLoc.getWorld().spawnEntity(entitySpot, EntityType.ITEM_FRAME);
+                        if (itemFrame != null) {
+                            // Need to improve this shity fix ...
+                            Material material = Material.matchMaterial(ent.getId().substring(10).toUpperCase());
+                            ;
+
+                            if (material == null && IslandBlock.WEtoM.containsKey(ent.getId().substring(10).toUpperCase())) {
+                                material = IslandBlock.WEtoM.get(ent.getId().substring(10).toUpperCase());
                             }
 
-                            // http://minecraft.gamepedia.com/Painting#Data_values
-                            if(facingList.containsKey(ent.getFacing())){
-                                painting.setFacingDirection(facingList.get(ent.getFacing()), true);
+                            ItemStack item;
+
+                            if (material != null) {
+                                //Bukkit.getLogger().info("DEBUG: id: " + ent.getId() + ", material match: " + material.toString());
+                                if (ent.getCount() != null) {
+                                    if (ent.getDamage() != null) {
+                                        item = new ItemStack(material, ent.getCount(), ent.getDamage());
+                                    } else {
+                                        item = new ItemStack(material, ent.getCount(), (short) 0);
+                                    }
+                                } else {
+                                    if (ent.getDamage() != null) {
+                                        item = new ItemStack(material, 1, ent.getDamage());
+                                    } else {
+                                        item = new ItemStack(material, 1, (short) 0);
+                                    }
+                                }
+                            } else {
+                                //Bukkit.getLogger().info("DEBUG: material can't be found for: " + ent.getId() + " (" + ent.getId().substring(10).toUpperCase() + ")");
+                                // Set to default content
+                                item = new ItemStack(Material.STONE, 0, (short) 4);
+                            }
+
+                            ItemMeta itemMeta = item.getItemMeta();
+
+                            // TODO: Implement methods to get enchantement, names, lore etc.
+
+                            item.setItemMeta(itemMeta);
+                            itemFrame.setItem(item);
+
+                            if (facingList.containsKey(ent.getFacing())) {
+                                itemFrame.setFacingDirection(facingList.get(ent.getFacing()), true);
                             } else {
                                 //set default direction
-                                painting.setFacingDirection(BlockFace.NORTH, true);
+                                itemFrame.setFacingDirection(BlockFace.NORTH, true);
                             }
-                            //Bukkit.getLogger().info("DEBUG: Painting setFacingDirection: " + painting.getLocation().toString() + "; facing: " + painting.getFacing() + "; ent facing: " + ent.getFacing());
-                            //Bukkit.getLogger().info("DEBUG: Painting setArt: " + painting.getLocation().toString() + "; art: " + painting.getArt() + "; ent motive: " + ent.getMotive());
 
-                        }
-                    } catch (IllegalArgumentException e) {
-                        //plugin.getLogger().warning("Cannot paste painting from schematic");
-                    }
-                } else if(ent.getType() == EntityType.ITEM_FRAME) {
-
-                    //Bukkit.getLogger().info("DEBUG: spawning itemframe at" + entitySpot.toString());
-
-                    //Bukkit.getLogger().info("DEBUG: tileX: " + ent.getTileX() + ", tileY: " + ent.getTileY() + ", tileZ: " + ent.getTileZ());
-
-                    ItemFrame itemFrame = (ItemFrame) blockLoc.getWorld().spawnEntity(entitySpot, EntityType.ITEM_FRAME);
-                    if (itemFrame != null) {
-                        // Need to improve this shity fix ...
-                        Material material = Material.matchMaterial(ent.getId().substring(10).toUpperCase());;
-
-                        if(material == null && IslandBlock.WEtoM.containsKey(ent.getId().substring(10).toUpperCase())){
-                            material = IslandBlock.WEtoM.get(ent.getId().substring(10).toUpperCase());
-                        }
-
-                        ItemStack item;
-
-                        if(material != null){
-                            //Bukkit.getLogger().info("DEBUG: id: " + ent.getId() + ", material match: " + material.toString()); 
-                            if(ent.getCount() != null){
-                                if(ent.getDamage() != null){
-                                    item = new ItemStack(material, ent.getCount(), ent.getDamage());
-                                } else {
-                                    item = new ItemStack(material, ent.getCount(), (short) 0);
-                                }
+                            // TODO: Implements code to handle the rotation of the item in the itemframe
+                            if (rotationList.containsKey(ent.getItemRotation())) {
+                                itemFrame.setRotation(rotationList.get(ent.getItemRotation()));
                             } else {
-                                if(ent.getDamage() != null){
-                                    item = new ItemStack(material, 1, ent.getDamage());
-                                } else {
-                                    item = new ItemStack(material, 1, (short) 0);
+                                // Set default direction
+                                itemFrame.setRotation(Rotation.NONE);
+                            }
+                        }
+                        break;
+                    default:
+                        //Bukkit.getLogger().info("Spawning " + ent.getType().toString() + " at " + entitySpot);
+                        Entity spawned = blockLoc.getWorld().spawnEntity(entitySpot, ent.getType());
+                        if (spawned != null) {
+                            spawned.setVelocity(ent.getMotion());
+                            if (ent.getType() == EntityType.SHEEP) {
+                                Sheep sheep = (Sheep) spawned;
+                                if (ent.isSheared()) {
+                                    sheep.setSheared(true);
                                 }
+                                DyeColor[] set = DyeColor.values();
+                                sheep.setColor(set[ent.getColor()]);
+                                sheep.setAge(ent.getAge());
+                            } else if (ent.getType() == EntityType.HORSE) {
+                                Horse horse = (Horse) spawned;
+                                Horse.Color[] set = Horse.Color.values();
+                                horse.setColor(set[ent.getColor()]);
+                                horse.setAge(ent.getAge());
+                                horse.setCarryingChest(ent.isCarryingChest());
+                            } else if (ent.getType() == EntityType.VILLAGER) {
+                                Villager villager = (Villager) spawned;
+                                villager.setAge(ent.getAge());
+                                Profession[] proffs = Profession.values();
+                                villager.setProfession(proffs[ent.getProfession()]);
+                            } else if (!Bukkit.getServer().getVersion().contains("(MC: 1.7") && ent.getType() == EntityType.RABBIT) {
+                                Rabbit rabbit = (Rabbit) spawned;
+                                Rabbit.Type[] set = Rabbit.Type.values();
+                                rabbit.setRabbitType(set[ent.getRabbitType()]);
+                                rabbit.setAge(ent.getAge());
+                            } else if (ent.getType() == EntityType.OCELOT) {
+                                Ocelot cat = (Ocelot) spawned;
+                                if (ent.isOwned()) {
+                                    cat.setTamed(true);
+                                    cat.setOwner(player);
+                                }
+                                Ocelot.Type[] set = Ocelot.Type.values();
+                                cat.setCatType(set[ent.getCatType()]);
+                                cat.setAge(ent.getAge());
+                                cat.setSitting(ent.isSitting());
+                            } else if (ent.getType() == EntityType.WOLF) {
+                                Wolf wolf = (Wolf) spawned;
+                                if (ent.isOwned()) {
+                                    wolf.setTamed(true);
+                                    wolf.setOwner(player);
+                                }
+                                wolf.setAge(ent.getAge());
+                                wolf.setSitting(ent.isSitting());
+                                DyeColor[] color = DyeColor.values();
+                                wolf.setCollarColor(color[ent.getCollarColor()]);
                             }
-                        } else {
-                            //Bukkit.getLogger().info("DEBUG: material can't be found for: " + ent.getId() + " (" + ent.getId().substring(10).toUpperCase() + ")"); 
-                            // Set to default content
-                            item = new ItemStack(Material.STONE, 0, (short) 4);
                         }
-
-                        ItemMeta itemMeta = item.getItemMeta();
-
-                        // TODO: Implement methods to get enchantement, names, lore etc.
-
-                        item.setItemMeta(itemMeta);
-                        itemFrame.setItem(item);
-
-                        if(facingList.containsKey(ent.getFacing())){
-                            itemFrame.setFacingDirection(facingList.get(ent.getFacing()), true);
-                        } else {
-                            //set default direction
-                            itemFrame.setFacingDirection(BlockFace.NORTH, true);
-                        }
-
-                        // TODO: Implements code to handle the rotation of the item in the itemframe
-                        if(rotationList.containsKey(ent.getItemRotation())){
-                            itemFrame.setRotation(rotationList.get(ent.getItemRotation()));
-                        } else {
-                            // Set default direction
-                            itemFrame.setRotation(Rotation.NONE);
-                        }
-                    }
-                } else {
-                    //Bukkit.getLogger().info("Spawning " + ent.getType().toString() + " at " + entitySpot);
-                    Entity spawned = blockLoc.getWorld().spawnEntity(entitySpot, ent.getType());
-                    if (spawned != null) {
-                        spawned.setVelocity(ent.getMotion());
-                        if (ent.getType() == EntityType.SHEEP) {
-                            Sheep sheep = (Sheep)spawned;
-                            if (ent.isSheared()) {   
-                                sheep.setSheared(true);
-                            }
-                            DyeColor[] set = DyeColor.values();
-                            sheep.setColor(set[ent.getColor()]);
-                            sheep.setAge(ent.getAge());
-                        } else if (ent.getType() == EntityType.HORSE) {
-                            Horse horse = (Horse)spawned;
-                            Horse.Color[] set = Horse.Color.values();
-                            horse.setColor(set[ent.getColor()]);
-                            horse.setAge(ent.getAge());
-                            horse.setCarryingChest(ent.isCarryingChest());
-                        } else if (ent.getType() == EntityType.VILLAGER) {
-                            Villager villager = (Villager)spawned;
-                            villager.setAge(ent.getAge());
-                            Profession[] proffs = Profession.values();
-                            villager.setProfession(proffs[ent.getProfession()]);
-                        } else if (!Bukkit.getServer().getVersion().contains("(MC: 1.7") && ent.getType() == EntityType.RABBIT) {
-                            Rabbit rabbit = (Rabbit)spawned;
-                            Rabbit.Type[] set = Rabbit.Type.values();
-                            rabbit.setRabbitType(set[ent.getRabbitType()]);
-                            rabbit.setAge(ent.getAge());
-                        } else if (ent.getType() == EntityType.OCELOT) {
-                            Ocelot cat = (Ocelot)spawned;
-                            if (ent.isOwned()) {
-                                cat.setTamed(true);
-                                cat.setOwner(player);
-                            }
-                            Ocelot.Type[] set = Ocelot.Type.values();
-                            cat.setCatType(set[ent.getCatType()]);
-                            cat.setAge(ent.getAge());
-                            cat.setSitting(ent.isSitting());
-                        } else if (ent.getType() == EntityType.WOLF) {
-                            Wolf wolf = (Wolf)spawned;
-                            if (ent.isOwned()) {
-                                wolf.setTamed(true);
-                                wolf.setOwner(player);
-                            }
-                            wolf.setAge(ent.getAge());
-                            wolf.setSitting(ent.isSitting());
-                            DyeColor[] color = DyeColor.values();
-                            wolf.setCollarColor(color[ent.getCollarColor()]);
-                        }
-                    }
+                        break;
                 }
             }
         }
@@ -1041,11 +1071,37 @@ public class Schematic {
                     if (doubleChest != null) {
                         Inventory inventory = doubleChest.getInventory();
                         inventory.clear();
-                        inventory.setContents(defaultChestItems);
+                        ItemStack[] chestItems = Arrays.copyOf(defaultChestItems, defaultChestItems.length, ItemStack[].class);
+                        for (int i = 0; i < chestItems.length; i++) {
+                            ItemStack chestItem = chestItems[i];
+                            if (isBannedMaterial(chestItem.getType())) {
+                                ItemStack newItem = chestItem.clone();
+                                ItemMeta meta = newItem.getItemMeta();
+                                List<String> lore = new ArrayList<>();
+                                lore.add("원산지: " + loc.getBlockX() + ", " + loc.getBlockZ());
+                                meta.setLore(lore);
+                                newItem.setItemMeta(meta);
+                                chestItems[i] = newItem;
+                            }
+                        }
+                        inventory.setContents(chestItems);
                     } else {
                         Inventory inventory = islandChest.getInventory();
                         inventory.clear();
-                        inventory.setContents(defaultChestItems);
+                        ItemStack[] chestItems = Arrays.copyOf(defaultChestItems, defaultChestItems.length, ItemStack[].class);
+                        for (int i = 0; i < chestItems.length; i++) {
+                            ItemStack chestItem = chestItems[i];
+                            if (isBannedMaterial(chestItem.getType())) {
+                                ItemStack newItem = chestItem.clone();
+                                ItemMeta meta = newItem.getItemMeta();
+                                List<String> lore = new ArrayList<>();
+                                lore.add("원산지: " + loc.getBlockX() + ", " + loc.getBlockZ());
+                                meta.setLore(lore);
+                                newItem.setItemMeta(meta);
+                                chestItems[i] = newItem;
+                            }
+                        }
+                        inventory.setContents(chestItems);
                     }
                 }
             }
@@ -1145,7 +1201,7 @@ public class Schematic {
     @SuppressWarnings("deprecation")
     public void prePasteSchematic(short[] blocks, byte[] data) {
         //plugin.getLogger().info("DEBUG: prepaste ");
-        islandBlocks = new ArrayList<IslandBlock>();
+        islandBlocks = new ArrayList<>();
         Map<BlockVector, Map<String, Tag>> tileEntitiesMap = this.getTileEntitiesMap();
         // Start with non-attached blocks
         //plugin.getLogger().info("DEBUG: attachable size = " + attachable.size());
@@ -1457,7 +1513,21 @@ public class Schematic {
             final InventoryHolder chest = (InventoryHolder) blockToChange.getState();
             final Inventory inventory = chest.getInventory();
             //inventory.clear();
-            inventory.setContents(Settings.chestItems);
+            ItemStack[] chestItems = Arrays.copyOf(Settings.chestItems, Settings.chestItems.length, ItemStack[].class);
+            for (int i = 0; i < chestItems.length; i++) {
+                ItemStack chestItem = chestItems[i];
+                if (isBannedMaterial(chestItem.getType())) {
+                    ItemStack newItem = chestItem.clone();
+                    ItemMeta meta = newItem.getItemMeta();
+                    List<String> lore = new ArrayList<>();
+                    lore.add("원산지: " + x + ", " + z);
+                    meta.setLore(lore);
+                    newItem.setItemMeta(meta);
+                    chestItems[i] = newItem;
+                }
+            }
+
+            inventory.setContents(chestItems);
         }
         // Fill the chest and orient it correctly (1.8 faces it north!
         DirectionalContainer dc = (DirectionalContainer) blockToChange.getState().getData();
@@ -1778,4 +1848,14 @@ public class Schematic {
         }
 
     }
+
+    public static boolean isBannedMaterial(Material material) {
+        return material == Material.DIRT
+                || material == Material.SOIL
+                || material == Material.GRASS
+                || material == Material.GRASS_PATH
+                || material == Material.MYCEL
+                || material == Material.SAND;
+    }
+
 }

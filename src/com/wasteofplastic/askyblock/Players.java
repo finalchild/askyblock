@@ -76,24 +76,24 @@ public class Players {
         if (uuid == null) {
             throw new IOException("UUID is null");
         }
-        this.members = new ArrayList<UUID>();
+        this.members = new ArrayList<>();
         this.hasIsland = false;
         this.islandLocation = null;
         //this.homeLocation = null;
-        this.homeLocations = new HashMap<Integer,Location>();
+        this.homeLocations = new HashMap<>();
         this.inTeam = false;
         this.teamLeader = null;
         this.teamIslandLocation = null;
-        this.challengeList = new HashMap<String, Boolean>();
-        this.challengeListTimes = new HashMap<String, Integer>();
-        this.challengeListTimestamp = new HashMap<String, Long>();
+        this.challengeList = new HashMap<>();
+        this.challengeListTimes = new HashMap<>();
+        this.challengeListTimestamp = new HashMap<>();
         this.islandLevel = 0;
         this.playerName = "";
         this.resetsLeft = Settings.resetLimit;
-        this.kickedList = new HashMap<Location, Date>();
+        this.kickedList = new HashMap<>();
         this.locale = "";
         this.startIslandRating = 50;
-        this.banList = new ArrayList<UUID>();
+        this.banList = new ArrayList<>();
         this.useControlPanel = Settings.useControlPanel;
         load(uuid);
     }
@@ -238,7 +238,7 @@ public class Players {
         playerInfo.set("playerName", playerName);
         playerInfo.set("hasIsland", hasIsland);
         if (hasIsland && !banList.isEmpty()) {
-            List<String> banListString = new ArrayList<String>();
+            List<String> banListString = new ArrayList<>();
             for (UUID bannedUUID : banList) {
                 banListString.add(bannedUUID.toString());
             }
@@ -264,7 +264,7 @@ public class Players {
         playerInfo.set("teamIslandLocation", teamIslandLocation);
         playerInfo.set("islandLevel", islandLevel);
         // Serialize UUIDs
-        List<String> temp = new ArrayList<String>();
+        List<String> temp = new ArrayList<>();
         for (UUID m : members) {
             temp.add(m.toString());
         }
@@ -364,7 +364,7 @@ public class Players {
             // It has not been globally reset
             // plugin.getLogger().info("DEBUG: " + challenge + ":" +
             // challengeList.get(challenge.toLowerCase()).booleanValue() );
-            return challengeList.get(challenge.toLowerCase()).booleanValue();
+            return challengeList.get(challenge.toLowerCase());
         }
         return false;
     }
@@ -379,7 +379,7 @@ public class Players {
         if (challengeListTimes.containsKey(challenge.toLowerCase())) {
             // plugin.getLogger().info("DEBUG: check " + challenge + ":" +
             // challengeListTimes.get(challenge.toLowerCase()).intValue() );
-            return challengeListTimes.get(challenge.toLowerCase()).intValue();
+            return challengeListTimes.get(challenge.toLowerCase());
         }
         return 0;
     }
@@ -450,7 +450,7 @@ public class Players {
             }
         }
         if (members == null) {
-            members = new ArrayList<UUID>();
+            members = new ArrayList<>();
         }
         return inTeam;
     }
@@ -481,7 +481,7 @@ public class Players {
      * @return List of home locations
      */
     public HashMap<Integer,Location> getHomeLocations() {
-        HashMap<Integer,Location> result = new HashMap<Integer,Location>();
+        HashMap<Integer,Location> result = new HashMap<>();
         for (int number : homeLocations.keySet()) {
             result.put(number, homeLocations.get(number));
         }
@@ -906,7 +906,7 @@ public class Players {
      * Used by the reset admin command
      */
     public List<String> getChallengesDone() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Entry<String, Boolean> en : challengeList.entrySet()) {
             if (en.getValue()) {
                 result.add(en.getKey());
@@ -920,7 +920,7 @@ public class Players {
      * Used by the complete admin command
      */
     public List<String> getChallengesNotDone() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Entry<String, Boolean> en : challengeList.entrySet()) {
             if (!en.getValue()) {
                 result.add(en.getKey());

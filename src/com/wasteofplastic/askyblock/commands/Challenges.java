@@ -74,8 +74,8 @@ public class Challenges implements CommandExecutor, TabCompleter {
     private ASkyBlock plugin;
     private static final boolean DEBUG = false;
     // Database of challenges
-    private static LinkedHashMap<String, List<String>> challengeList = new LinkedHashMap<String, List<String>>();
-    private HashMap<UUID, List<CPItem>> playerChallengeGUI = new HashMap<UUID, List<CPItem>>();
+    private static LinkedHashMap<String, List<String>> challengeList = new LinkedHashMap<>();
+    private HashMap<UUID, List<CPItem>> playerChallengeGUI = new HashMap<>();
     private YamlConfiguration resettingChallenges;
     // Where challenges are stored
     private static FileConfiguration challengeFile = null;
@@ -140,7 +140,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 Util.sendMessage(sender, ChatColor.WHITE + plugin.myLocale(player.getUniqueId()).challengeslevel + ": " + ChatColor.GOLD
                         + getChallengeConfig().getString("challenges.challengeList." + challenge + ".level", ""));
                 String desc = ChatColor.translateAlternateColorCodes('&', getChallengeConfig().getString("challenges.challengeList." + challenge + ".description", "").replace("[label]", Settings.ISLANDCOMMAND));
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 if (desc.contains("|")) {
                     result.addAll(Arrays.asList(desc.split("\\|")));
                 } else {
@@ -426,107 +426,109 @@ public class Challenges implements CommandExecutor, TabCompleter {
      * @return List of ItemStacks that were given to the player or null if there was an error in the interpretation of the rewards
      */
     private List<ItemStack> giveItems(Player player, String[] itemRewards) {
-        List<ItemStack> rewardedItems = new ArrayList<ItemStack>();
+        List<ItemStack> rewardedItems = new ArrayList<>();
         Material rewardItem;
         int rewardQty;
         // Build the item stack of rewards to give the player
         for (final String s : itemRewards) {
             final String[] element = s.split(":");
-            if (element.length == 2) {
-                try {
-                    if (StringUtils.isNumeric(element[0])) {
-                        rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
-                    } else {
-                        rewardItem = Material.getMaterial(element[0].toUpperCase());
-                    }
-                    rewardQty = Integer.parseInt(element[1]);
-                    ItemStack item = new ItemStack(rewardItem, rewardQty);
-                    rewardedItems.add(item);
-                    final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(new ItemStack[] { item });
-                    if (!leftOvers.isEmpty()) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
-                    }
-                    if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
-                        player.getWorld().playSound(player.getLocation(), Sound.valueOf("ITEM_PICKUP"), 1F, 1F);
-                    } else {
-                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
-                    }
-                } catch (Exception e) {
-                    Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorRewardProblem);
-                    plugin.getLogger().severe("Could not give " + element[0] + ":" + element[1] + " to " + player.getName() + " for challenge reward!");
-                    String materialList = "";
-                    boolean hint = false;
-                    for (Material m : Material.values()) {
-                        materialList += m.toString() + ",";
-                        if (element[0].length() > 3) {
-                            if (m.toString().startsWith(element[0].substring(0, 3))) {
-                                plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
-                                hint = true;
-                            }
-                        }
-                    }
-                    if (!hint) {
-                        plugin.getLogger().severe("Sorry, I have no idea what " + element[0] + " is. Pick from one of these:");
-                        plugin.getLogger().severe(materialList.substring(0, materialList.length() - 1));
-                    }
-                }
-            } else if (element.length == 3) {
-                try {
-                    if (StringUtils.isNumeric(element[0])) {
-                        rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
-                    } else {
-                        rewardItem = Material.getMaterial(element[0].toUpperCase());
-                    }
-                    rewardQty = Integer.parseInt(element[2]);                    
-                    // Check for POTION
-                    if (rewardItem.equals(Material.POTION)) {
-                        givePotion(player, rewardedItems, element, rewardQty);
-                    } else {
-                        ItemStack item = null;
-                        // Normal item, not a potion, check if it is a Monster Egg
-                        if (rewardItem.equals(Material.MONSTER_EGG)) {
-
-                            try {                                
-                                EntityType type = EntityType.valueOf(element[1].toUpperCase());
-                                if (Bukkit.getServer().getVersion().contains("(MC: 1.8") || Bukkit.getServer().getVersion().contains("(MC: 1.7")) {
-                                    item = new SpawnEgg(type).toItemStack(rewardQty);
-                                } else {
-                                    try {
-                                        item = new SpawnEgg1_9(type).toItemStack(rewardQty);
-                                    } catch (Exception ex) {
-                                        item = new ItemStack(rewardItem);
-                                        plugin.getLogger().severe("Monster eggs not supported with this server version.");
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Bukkit.getLogger().severe("Spawn eggs must be described by name. Try one of these (not all are possible):");                          
-                                for (EntityType type : EntityType.values()) {
-                                    if (type.isSpawnable() && type.isAlive()) {
-                                        plugin.getLogger().severe(type.toString());
-                                    }
-                                }
-                            }
+            switch (element.length) {
+                case 2:
+                    try {
+                        if (StringUtils.isNumeric(element[0])) {
+                            rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
                         } else {
-                            int rewMod = Integer.parseInt(element[1]);
-                            item = new ItemStack(rewardItem, rewardQty, (short) rewMod);
+                            rewardItem = Material.getMaterial(element[0].toUpperCase());
                         }
-                        if (item != null) {
-                            rewardedItems.add(item);
-                            final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(
-                                    new ItemStack[] { item });
-                            if (!leftOvers.isEmpty()) {
-                                player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
+                        rewardQty = Integer.parseInt(element[1]);
+                        ItemStack item = new ItemStack(rewardItem, rewardQty);
+                        rewardedItems.add(item);
+                        final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(new ItemStack[]{item});
+                        if (!leftOvers.isEmpty()) {
+                            player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
+                        }
+                        if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
+                            player.getWorld().playSound(player.getLocation(), Sound.valueOf("ITEM_PICKUP"), 1F, 1F);
+                        } else {
+                            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
+                        }
+                    } catch (Exception e) {
+                        Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorRewardProblem);
+                        plugin.getLogger().severe("Could not give " + element[0] + ":" + element[1] + " to " + player.getName() + " for challenge reward!");
+                        String materialList = "";
+                        boolean hint = false;
+                        for (Material m : Material.values()) {
+                            materialList += m.toString() + ",";
+                            if (element[0].length() > 3) {
+                                if (m.toString().startsWith(element[0].substring(0, 3))) {
+                                    plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
+                                    hint = true;
+                                }
                             }
                         }
+                        if (!hint) {
+                            plugin.getLogger().severe("Sorry, I have no idea what " + element[0] + " is. Pick from one of these:");
+                            plugin.getLogger().severe(materialList.substring(0, materialList.length() - 1));
+                        }
                     }
-                    if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
-                        player.getWorld().playSound(player.getLocation(), Sound.valueOf("ITEM_PICKUP"), 1F, 1F);
-                    } else {
-                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
-                    }
-                } catch (Exception e) {
-                    Util.sendMessage(player, ChatColor.RED + "There was a problem giving your reward. Ask Admin to check log!");
-                    plugin.getLogger().severe("Could not give " + element[0] + ":" + element[1] + " to " + player.getName() + " for challenge reward!");
+                    break;
+                case 3:
+                    try {
+                        if (StringUtils.isNumeric(element[0])) {
+                            rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
+                        } else {
+                            rewardItem = Material.getMaterial(element[0].toUpperCase());
+                        }
+                        rewardQty = Integer.parseInt(element[2]);
+                        // Check for POTION
+                        if (rewardItem.equals(Material.POTION)) {
+                            givePotion(player, rewardedItems, element, rewardQty);
+                        } else {
+                            ItemStack item = null;
+                            // Normal item, not a potion, check if it is a Monster Egg
+                            if (rewardItem.equals(Material.MONSTER_EGG)) {
+
+                                try {
+                                    EntityType type = EntityType.valueOf(element[1].toUpperCase());
+                                    if (Bukkit.getServer().getVersion().contains("(MC: 1.8") || Bukkit.getServer().getVersion().contains("(MC: 1.7")) {
+                                        item = new SpawnEgg(type).toItemStack(rewardQty);
+                                    } else {
+                                        try {
+                                            item = new SpawnEgg1_9(type).toItemStack(rewardQty);
+                                        } catch (Exception ex) {
+                                            item = new ItemStack(rewardItem);
+                                            plugin.getLogger().severe("Monster eggs not supported with this server version.");
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Bukkit.getLogger().severe("Spawn eggs must be described by name. Try one of these (not all are possible):");
+                                    for (EntityType type : EntityType.values()) {
+                                        if (type.isSpawnable() && type.isAlive()) {
+                                            plugin.getLogger().severe(type.toString());
+                                        }
+                                    }
+                                }
+                            } else {
+                                int rewMod = Integer.parseInt(element[1]);
+                                item = new ItemStack(rewardItem, rewardQty, (short) rewMod);
+                            }
+                            if (item != null) {
+                                rewardedItems.add(item);
+                                final HashMap<Integer, ItemStack> leftOvers = player.getInventory().addItem(
+                                        new ItemStack[]{item});
+                                if (!leftOvers.isEmpty()) {
+                                    player.getWorld().dropItemNaturally(player.getLocation(), leftOvers.get(0));
+                                }
+                            }
+                        }
+                        if (plugin.getServer().getVersion().contains("(MC: 1.8") || plugin.getServer().getVersion().contains("(MC: 1.7")) {
+                            player.getWorld().playSound(player.getLocation(), Sound.valueOf("ITEM_PICKUP"), 1F, 1F);
+                        } else {
+                            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1F, 1F);
+                        }
+                    } catch (Exception e) {
+                        Util.sendMessage(player, ChatColor.RED + "There was a problem giving your reward. Ask Admin to check log!");
+                        plugin.getLogger().severe("Could not give " + element[0] + ":" + element[1] + " to " + player.getName() + " for challenge reward!");
                     /*
                     if (element[0].equalsIgnoreCase("POTION")) {
                         String potionList = "";
@@ -546,54 +548,56 @@ public class Challenges implements CommandExecutor, TabCompleter {
                         }
 
                     } else {*/
-                    String materialList = "";
-                    boolean hint = false;
-                    for (Material m : Material.values()) {
-                        materialList += m.toString() + ",";
-                        if (m.toString().startsWith(element[0].substring(0, 3))) {
-                            plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
-                            hint = true;
+                        String materialList = "";
+                        boolean hint = false;
+                        for (Material m : Material.values()) {
+                            materialList += m.toString() + ",";
+                            if (m.toString().startsWith(element[0].substring(0, 3))) {
+                                plugin.getLogger().severe("Did you mean " + m.toString() + "? If so, put that in challenges.yml.");
+                                hint = true;
+                            }
                         }
+                        if (!hint) {
+                            plugin.getLogger().severe("Sorry, I have no idea what " + element[0] + " is. Pick from one of these:");
+                            plugin.getLogger().severe(materialList.substring(0, materialList.length() - 1));
+                        }
+                        //}
+                        return null;
                     }
-                    if (!hint) {
-                        plugin.getLogger().severe("Sorry, I have no idea what " + element[0] + " is. Pick from one of these:");
-                        plugin.getLogger().severe(materialList.substring(0, materialList.length() - 1));
+                    break;
+                case 6:
+                    //plugin.getLogger().info("DEBUG: 6 element reward");
+                    // Potion format = POTION:name:level:extended:splash:qty
+                    try {
+                        if (StringUtils.isNumeric(element[0])) {
+                            rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
+                        } else {
+                            rewardItem = Material.getMaterial(element[0].toUpperCase());
+                        }
+                        rewardQty = Integer.parseInt(element[5]);
+                        // Check for POTION
+                        if (rewardItem.equals(Material.POTION)) {
+                            givePotion(player, rewardedItems, element, rewardQty);
+                        }
+                    } catch (Exception e) {
+                        Util.sendMessage(player, ChatColor.RED + "There was a problem giving your reward. Ask Admin to check log!");
+                        plugin.getLogger().severe("Problem with reward potion: " + s);
+                        plugin.getLogger().severe("Format POTION:NAME:<LEVEL>:<EXTENDED>:<SPLASH/LINGER>:QTY");
+                        plugin.getLogger().severe("LEVEL, EXTENDED and SPLASH are optional");
+                        plugin.getLogger().severe("LEVEL is a number");
+                        plugin.getLogger().severe("Examples:");
+                        plugin.getLogger().severe("POTION:STRENGTH:1:EXTENDED:SPLASH:1");
+                        plugin.getLogger().severe("POTION:JUMP:2:NOTEXTENDED:NOSPLASH:1");
+                        plugin.getLogger().severe("POTION:WEAKNESS:::::1   -  any weakness potion");
+                        plugin.getLogger().severe("Available names are:");
+                        String potionNames = "";
+                        for (PotionType p : PotionType.values()) {
+                            potionNames += p.toString() + ", ";
+                        }
+                        plugin.getLogger().severe(potionNames.substring(0, potionNames.length() - 2));
+                        return null;
                     }
-                    //}
-                    return null;
-                }
-            } else if (element.length == 6) {
-                //plugin.getLogger().info("DEBUG: 6 element reward");
-                // Potion format = POTION:name:level:extended:splash:qty
-                try {
-                    if (StringUtils.isNumeric(element[0])) {
-                        rewardItem = Material.getMaterial(Integer.parseInt(element[0]));
-                    } else {
-                        rewardItem = Material.getMaterial(element[0].toUpperCase());
-                    }
-                    rewardQty = Integer.parseInt(element[5]);
-                    // Check for POTION
-                    if (rewardItem.equals(Material.POTION)) {
-                        givePotion(player, rewardedItems, element, rewardQty);
-                    }
-                } catch (Exception e) {
-                    Util.sendMessage(player, ChatColor.RED + "There was a problem giving your reward. Ask Admin to check log!");
-                    plugin.getLogger().severe("Problem with reward potion: " + s);
-                    plugin.getLogger().severe("Format POTION:NAME:<LEVEL>:<EXTENDED>:<SPLASH/LINGER>:QTY");
-                    plugin.getLogger().severe("LEVEL, EXTENDED and SPLASH are optional");
-                    plugin.getLogger().severe("LEVEL is a number");
-                    plugin.getLogger().severe("Examples:");
-                    plugin.getLogger().severe("POTION:STRENGTH:1:EXTENDED:SPLASH:1");
-                    plugin.getLogger().severe("POTION:JUMP:2:NOTEXTENDED:NOSPLASH:1");
-                    plugin.getLogger().severe("POTION:WEAKNESS:::::1   -  any weakness potion");
-                    plugin.getLogger().severe("Available names are:");
-                    String potionNames = "";
-                    for (PotionType p : PotionType.values()) {
-                        potionNames += p.toString() + ", ";
-                    }
-                    plugin.getLogger().severe(potionNames.substring(0, potionNames.length()-2));
-                    return null;
-                }
+                    break;
             }
         }
         return rewardedItems;
@@ -843,7 +847,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 if (!hasRequired(player, challenge, "inventory")) {
                     Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorNotEnoughItems);
                     String desc = ChatColor.translateAlternateColorCodes('&', getChallengeConfig().getString("challenges.challengeList." + challenge + ".description", "").replace("[label]", Settings.ISLANDCOMMAND));
-                    List<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<>();
                     if (desc.contains("|")) {
                         result.addAll(Arrays.asList(desc.split("\\|")));
                     } else {
@@ -874,7 +878,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                     }
                     Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorNotCloseEnough.replace("[number]", String.valueOf(searchRadius)));
                     String desc = ChatColor.translateAlternateColorCodes('&', getChallengeConfig().getString("challenges.challengeList." + challenge + ".description").replace("[label]", Settings.ISLANDCOMMAND));    
-                    List<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<>();
                     if (desc.contains("|")) {
                         result.addAll(Arrays.asList(desc.split("\\|")));
                     } else {
@@ -920,7 +924,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 if (challengeList.containsKey(level)) {
                     challengeList.get(level).add(s);
                 } else {
-                    List<String> t = new ArrayList<String>();
+                    List<String> t = new ArrayList<>();
                     t.add(s);
                     challengeList.put(level, t);
                 }
@@ -949,7 +953,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
                 if (!VaultHelper.econ.has(player, Settings.worldName, moneyReq)) {
                     Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).challengeserrorNotEnoughItems);
                     String desc = ChatColor.translateAlternateColorCodes('&', getChallengeConfig().getString("challenges.challengeList." + challenge + ".description").replace("[label]", Settings.ISLANDCOMMAND));    
-                    List<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<>();
                     if (desc.contains("|")) {
                         result.addAll(Arrays.asList(desc.split("\\|")));
                     } else {
@@ -970,7 +974,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
         // This second one is so that items such as potions or variations on
         // standard items can be collected
         if (type.equalsIgnoreCase("inventory")) {
-            List<ItemStack> toBeRemoved = new ArrayList<ItemStack>();
+            List<ItemStack> toBeRemoved = new ArrayList<>();
             Material reqItem;
             int reqAmount = 0;
             if (!reqList.isEmpty()) {
@@ -1078,10 +1082,10 @@ public class Challenges implements CommandExecutor, TabCompleter {
                         } catch (Exception e) {
                             plugin.getLogger().severe("Problem with " + s + " in challenges.yml!");
                             Util.sendMessage(player, ChatColor.RED + plugin.myLocale(player.getUniqueId()).errorCommandNotReady);
-                            String materialList = "";
+                            StringBuilder materialList = new StringBuilder();
                             boolean hint = false;
                             for (Material m : Material.values()) {
-                                materialList += m.toString() + ",";
+                                materialList.append(m.toString()).append(",");
                                 if (m.toString().contains(s.substring(0, 3).toUpperCase())) {
                                     plugin.getLogger().severe("Did you mean " + m.toString() + "?");
                                     hint = true;
@@ -1463,8 +1467,8 @@ public class Challenges implements CommandExecutor, TabCompleter {
             return true;
         }
         if (type.equalsIgnoreCase("island")) {
-            final HashMap<Material, Integer> neededItem = new HashMap<Material, Integer>();
-            final HashMap<EntityType, Integer> neededEntities = new HashMap<EntityType, Integer>();
+            final HashMap<Material, Integer> neededItem = new HashMap<>();
+            final HashMap<EntityType, Integer> neededEntities = new HashMap<>();
             if (!reqList.isEmpty()) {
                 for (int i = 0; i < reqList.split(" ").length; i++) {
                     final String[] sPart = reqList.split(" ")[i].split(":");
@@ -1641,7 +1645,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
         //plugin.getLogger().info("DEBUG: level requested = " + level);
         // Create the challenges control panel
         // New panel map
-        List<CPItem> cp = new ArrayList<CPItem>();
+        List<CPItem> cp = new ArrayList<>();
 
         // Do some checking
         // plugin.getLogger().severe("DEBUG: Opening level " + level);
@@ -1677,7 +1681,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
         for (int i = 0; i < Settings.challengeLevels.size(); i++) {
             if (!level.equalsIgnoreCase(Settings.challengeLevels.get(i))) {
                 // Add a navigation book
-                List<String> lore = new ArrayList<String>();
+                List<String> lore = new ArrayList<>();
                 if (i <= levelDone) {
                     CPItem item = new CPItem(Material.BOOK_AND_QUILL, ChatColor.GOLD + Settings.challengeLevels.get(i), null, null);
                     lore = Util.chop(ChatColor.WHITE, plugin.myLocale(player.getUniqueId()).challengesNavigation.replace("[level]", Settings.challengeLevels.get(i)), 25);
@@ -1889,7 +1893,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
      * @return List of strings splitting challenge string into 25 chars long 
      */
     private List<String> challengeDescription(String challenge, Player player) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         final int length = 25;
         // plugin.getLogger().info("DEBUG: challenge is '"+challenge+"'");
         // plugin.getLogger().info("challenges.challengeList." + challenge +
@@ -2018,7 +2022,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
         Settings.challengeList = getChallengeConfig().getConfigurationSection("challenges.challengeList").getKeys(false);
         // This code below handles the edge case where the levels is set to ''
         if (getChallengeConfig().getString("challenges.levels","").isEmpty()) {
-            Settings.challengeLevels = new ArrayList<String>();
+            Settings.challengeLevels = new ArrayList<>();
         } else {
             Settings.challengeLevels = Arrays.asList(getChallengeConfig().getString("challenges.levels","").split(" "));
         }
@@ -2058,7 +2062,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
      * Gets a list of all challenges in existence.
      */
     public List<String> getAllChallenges() {
-        List<String> returned = new ArrayList<String>();
+        List<String> returned = new ArrayList<>();
         for (List<String> challenges : challengeList.values()) {
             returned.addAll(challenges);
         }
@@ -2075,7 +2079,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
      * @return List of challenges
      */
     public List<String> getAvailableChallenges(Player player) {
-        List<String> returned = new ArrayList<String>();
+        List<String> returned = new ArrayList<>();
         for (Map.Entry<String, List<String>> e : challengeList.entrySet())
             if (isLevelAvailable(player, e.getKey())) {
                 returned.addAll(e.getValue());
@@ -2086,11 +2090,11 @@ public class Challenges implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         Player player = (Player) sender;
 
-        List<String> options = new ArrayList<String>();
+        List<String> options = new ArrayList<>();
 
         switch (args.length) {
         case 0: 
@@ -2188,7 +2192,7 @@ public class Challenges implements CommandExecutor, TabCompleter {
      * @return formatted list of reset challenges and their duration
      */
     public List<String> getRepeatingChallengeResets() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String challenge : resettingChallenges.getKeys(false)) {
             long resetTime = resettingChallenges.getLong(challenge + ".resettime");
             Date date = new Date(resetTime);

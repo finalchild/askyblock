@@ -63,9 +63,9 @@ public class ChatListener implements Listener {
      * @param plugin
      */
     public ChatListener(ASkyBlock plugin) {
-        this.teamChatUsers = new ConcurrentHashMap<UUID,Boolean>();
-        this.playerLevels = new ConcurrentHashMap<UUID,String>();
-        this.playerChallengeLevels = new ConcurrentHashMap<UUID,String>();
+        this.teamChatUsers = new ConcurrentHashMap<>();
+        this.playerLevels = new ConcurrentHashMap<>();
+        this.playerChallengeLevels = new ConcurrentHashMap<>();
         this.plugin = plugin;
         // Add all online player Levels
         for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -73,7 +73,7 @@ public class ChatListener implements Listener {
             playerChallengeLevels.put(player.getUniqueId(), plugin.getChallenges().getChallengeLevel(player));
         }
         // Initialize spies
-        spies = new HashSet<UUID>();
+        spies = new HashSet<>();
     }
 
 

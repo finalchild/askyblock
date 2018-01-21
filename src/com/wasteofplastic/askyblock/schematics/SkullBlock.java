@@ -62,7 +62,7 @@ public class SkullBlock {
     private static HashMap<Integer, BlockFace> skullRotationList;
 
     static {
-        skullTypeList = new HashMap<Integer, SkullType>();
+        skullTypeList = new HashMap<>();
         skullTypeList.put(0, SkullType.SKELETON);
         skullTypeList.put(1, SkullType.WITHER);
         skullTypeList.put(2, SkullType.ZOMBIE);
@@ -71,7 +71,7 @@ public class SkullBlock {
     }
 
     static {
-        skullRotationList = new HashMap<Integer, BlockFace>();
+        skullRotationList = new HashMap<>();
         skullRotationList.put(0, BlockFace.NORTH);
         skullRotationList.put(1, BlockFace.NORTH_NORTH_EAST);
         skullRotationList.put(2, BlockFace.NORTH_EAST);

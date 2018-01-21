@@ -131,7 +131,7 @@ public class EntityLimits implements Listener {
         }
         // Count how many animals are there and who is the most likely spawner if it was a player
         // This had to be reworked because the previous snowball approach doesn't work for large volumes
-        List<Player> culprits = new ArrayList<Player>();
+        List<Player> culprits = new ArrayList<>();
         boolean overLimit = false;
         int animals = 0;
         for (int x = island.getMinProtectedX() /16; x <= (island.getMinProtectedX() + island.getProtectionSize() - 1)/16; x++) {
@@ -157,7 +157,7 @@ public class EntityLimits implements Listener {
                                         || type == Material.SEEDS) {
                                     if (DEBUG2)
                                         plugin.getLogger().info("Player used egg or did breeding ");
-                                    if (!culprits.contains((Player)entity)) {
+                                    if (!culprits.contains(entity)) {
                                         culprits.add(((Player) entity));
                                     }
                                 }
@@ -191,7 +191,7 @@ public class EntityLimits implements Listener {
                                 Material type = itemInHand.getType();
                                 if (type == Material.EGG || type == Material.MONSTER_EGG || type == Material.WHEAT || type == Material.CARROT_ITEM
                                         || type == Material.SEEDS) {
-                                    if (!culprits.contains((Player)entity)) {
+                                    if (!culprits.contains(entity)) {
                                         culprits.add(((Player) entity));
                                     }
                                 }
@@ -579,7 +579,7 @@ public class EntityLimits implements Listener {
                         e.setCancelled(true);
                         for (Entity ent : e.getVehicle().getLocation().getWorld().getNearbyEntities(e.getVehicle().getLocation(), 5, 5, 5)) {
                             if (ent instanceof Player) { 
-                                Util.sendMessage((Player)ent, ChatColor.RED 
+                                Util.sendMessage(ent, ChatColor.RED
                                         + (plugin.myLocale(player.getUniqueId()).entityLimitReached.replace("[entity]", 
                                                 Util.prettifyText(e.getVehicle().getType().toString()))
                                                 .replace("[number]", String.valueOf(Settings.entityLimits.get(e.getVehicle().getType())))));

@@ -42,7 +42,7 @@ public class PotBlock {
     private static HashMap<String, Material> potItemList;
 
     static {
-        potItemList = new HashMap<String, Material>();
+        potItemList = new HashMap<>();
         potItemList.put("", Material.AIR);
         potItemList.put("minecraft:red_flower", Material.RED_ROSE);
         potItemList.put("minecraft:yellow_flower", Material.YELLOW_FLOWER);
@@ -92,36 +92,42 @@ public class PotBlock {
                 if(tileData.containsKey("Data")){
                     int dataTag = ((IntTag) tileData.get("Data")).getValue();
                     // We should check data for each type of potItem 
-                    if(potItem == Material.RED_ROSE){
-                        if(dataTag >= 0 && dataTag <= 8){
-                            potItemData = dataTag;
-                        } else {
-                            // Prevent hacks
+                    switch (potItem) {
+                        case RED_ROSE:
+                            if (dataTag >= 0 && dataTag <= 8) {
+                                potItemData = dataTag;
+                            } else {
+                                // Prevent hacks
+                                potItemData = 0;
+                            }
+                            break;
+                        case YELLOW_FLOWER:
+                        case RED_MUSHROOM:
+                        case BROWN_MUSHROOM:
+                        case CACTUS:
+                            // Set to 0 anyway
                             potItemData = 0;
-                        }
-                    } else if(potItem == Material.YELLOW_FLOWER ||
-                            potItem == Material.RED_MUSHROOM ||
-                            potItem == Material.BROWN_MUSHROOM ||
-                            potItem == Material.CACTUS){
-                        // Set to 0 anyway
-                        potItemData = 0;
-                    } else if(potItem == Material.SAPLING){
-                        if(dataTag >= 0 && dataTag <= 4){
-                            potItemData = dataTag;
-                        } else {
-                            // Prevent hacks
+                            break;
+                        case SAPLING:
+                            if (dataTag >= 0 && dataTag <= 4) {
+                                potItemData = dataTag;
+                            } else {
+                                // Prevent hacks
+                                potItemData = 0;
+                            }
+                            break;
+                        case LONG_GRASS:
+                            // Only 0 or 2
+                            if (dataTag == 0 || dataTag == 2) {
+                                potItemData = dataTag;
+                            } else {
+                                potItemData = 0;
+                            }
+                            break;
+                        default:
+                            // ERROR ?
                             potItemData = 0;
-                        }
-                    } else if(potItem == Material.LONG_GRASS){
-                        // Only 0 or 2
-                        if(dataTag == 0 || dataTag == 2){
-                            potItemData = dataTag;
-                        } else {
-                            potItemData = 0;
-                        }
-                    } else {
-                        // ERROR ?
-                        potItemData = 0;
+                            break;
                     }
                 }
                 else {

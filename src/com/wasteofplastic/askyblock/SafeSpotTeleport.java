@@ -92,7 +92,7 @@ public class SafeSpotTeleport {
         if (island != null) {
             final World world = islandLoc.getWorld();
             // Get the chunks
-            List<ChunkSnapshot> chunkSnapshot = new ArrayList<ChunkSnapshot>();
+            List<ChunkSnapshot> chunkSnapshot = new ArrayList<>();
             // Add the center chunk
             chunkSnapshot.add(island.getCenter().toVector().toLocation(world).getChunk().getChunkSnapshot());
             // Add immediately adjacent chunks
@@ -258,9 +258,9 @@ public class SafeSpotTeleport {
                                 //plugin.getLogger().info("DEBUG: safe spot not found");
                                 if (entity instanceof Player) {
                                     if (!failureMessage.isEmpty()) {
-                                        Util.sendMessage(((Player)entity), failureMessage);
+                                        Util.sendMessage(entity, failureMessage);
                                     } else {
-                                        Util.sendMessage(((Player)entity), ChatColor.RED + plugin.myLocale(((Player)entity).getUniqueId()).warpserrorNotSafe);
+                                        Util.sendMessage(entity, ChatColor.RED + plugin.myLocale(entity.getUniqueId()).warpserrorNotSafe);
                                     }
                                 }
                             }});

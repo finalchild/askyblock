@@ -49,10 +49,10 @@ import org.bukkit.util.Vector;
  */
 public class SafeBoat implements Listener {
     // Flags to indicate if a player has exited a boat recently or not
-    private static HashMap<UUID, Entity> exitedBoat = new HashMap<UUID, Entity>();
+    private static HashMap<UUID, Entity> exitedBoat = new HashMap<>();
     // Stores players that should be ignored because they are being teleported away from 
     // a locked islands
-    private static Set<UUID> ignoreList = new HashSet<UUID>();
+    private static Set<UUID> ignoreList = new HashSet<>();
 
     public SafeBoat(ASkyBlock aSkyBlock) {
     }
@@ -149,7 +149,7 @@ public class SafeBoat implements Listener {
                     for (int y = player.getLocation().getBlockY(); y < player.getLocation().getBlockY() + 2; y++) {
                         // The safe location to tp to is actually +0.5 to x and
                         // z.
-                        final Location loc = new Location(player.getWorld(), (double) (x + 0.5), (double) y, (double) (z + 0.5));
+                        final Location loc = new Location(player.getWorld(), x + 0.5, (double) y, z + 0.5);
                         // plugin.getLogger().info("XYZ is " + x + " " + y + " "
                         // + z);
                         // Make sure the location is safe
@@ -177,7 +177,7 @@ public class SafeBoat implements Listener {
             return;
         }
         // LivingEntity entity = e.getExited();
-        final Entity entityObj = (Entity) e.getExited();
+        final Entity entityObj = e.getExited();
         if (!(entityObj instanceof Player)) {
             return;
         }

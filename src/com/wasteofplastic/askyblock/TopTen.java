@@ -18,13 +18,8 @@
 package com.wasteofplastic.askyblock;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -54,7 +49,7 @@ import com.wasteofplastic.askyblock.util.Util;
 public class TopTen implements Listener{
     private static ASkyBlock plugin = ASkyBlock.getPlugin();
     // Top ten list of players
-    private static Map<UUID, Long> topTenList = new HashMap<UUID, Long>();
+    private static Map<UUID, Long> topTenList = new HashMap<>();
     private static final int GUISIZE = 27; // Must be a multiple of 9
     private static final int[] SLOTS = new int[] {4, 12, 14, 19, 20, 21, 22, 23, 24, 25};
     private static final boolean DEBUG = false;
@@ -274,12 +269,9 @@ public class TopTen implements Listener{
                     if (plugin.getPlayers().inTeam(playerUUID)) {
                         // Island name + Island members + Island level
                         final List<UUID> pMembers = plugin.getPlayers().getMembers(playerUUID);
-                        String memberList = "";
+                        StringJoiner memberList = new StringJoiner(", ");
                         for (UUID members : pMembers) {
-                            memberList += plugin.getPlayers().getName(members) + ", ";
-                        }
-                        if (memberList.length() > 2) {
-                            memberList = memberList.substring(0, memberList.length() - 2);
+                            memberList.add(plugin.getPlayers().getName(members));
                         }
                         Util.sendMessage(player, ChatColor.AQUA + "#" + i + ": " + plugin.getGrid().getIslandName(playerUUID) + ChatColor.AQUA + " (" + memberList + ") - "
                                 + plugin.myLocale(player.getUniqueId()).levelislandLevel + " " + m.getValue());
@@ -353,7 +345,7 @@ public class TopTen implements Listener{
         meta.setOwner(playerName);
         meta.setDisplayName((plugin.myLocale(player).topTenGuiHeading.replace("[name]", plugin.getGrid().getIslandName(player))).replace("[rank]", String.valueOf(rank)));
         //meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "<!> " + ChatColor.YELLOW + "Island: " + ChatColor.GOLD + ChatColor.UNDERLINE + plugin.getGrid().getIslandName(player) + ChatColor.GRAY + " (#" + rank + ")");
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
         lore.add(ChatColor.YELLOW + plugin.myLocale(player).levelislandLevel + " " + long1);
         if (plugin.getPlayers().inTeam(player)) {
             final List<UUID> pMembers = plugin.getPlayers().getMembers(player);

@@ -40,7 +40,7 @@ import com.wasteofplastic.askyblock.util.Util;
  * 
  */
 public class DeleteIslandChunk {
-    private Set<Pair> chunksToClear = new HashSet<Pair>();
+    private Set<Pair> chunksToClear = new HashSet<>();
     //private HashMap<Location, Material> blocksToClear = new HashMap<Location,Material>();
     private NMSAbstraction nms = null;
 
@@ -53,7 +53,7 @@ public class DeleteIslandChunk {
         if (Settings.islandDistance - island.getProtectionSize() < 16) {
             cleanUpBlocks = true;
         }
-        int range = island.getProtectionSize() / 2 * +1;
+        int range = island.getProtectionSize() / 2;
         final int minx = island.getMinProtectedX();
         final int minz = island.getMinProtectedZ();
         final int maxx = island.getMinProtectedX() + island.getProtectionSize();

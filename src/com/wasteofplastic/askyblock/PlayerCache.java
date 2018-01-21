@@ -38,9 +38,9 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
  * @author tastybento
  */
 public class PlayerCache {
-    private HashMap<UUID, Players> playerCache = new HashMap<UUID, Players>();
+    private HashMap<UUID, Players> playerCache = new HashMap<>();
     private final ASkyBlock plugin;
-    private Set<UUID> inTeleport = new HashSet<UUID>();
+    private Set<UUID> inTeleport = new HashSet<>();
 
     public PlayerCache(ASkyBlock plugin) {
         this.plugin = plugin;

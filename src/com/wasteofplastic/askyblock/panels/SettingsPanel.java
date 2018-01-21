@@ -48,7 +48,7 @@ public class SettingsPanel implements Listener {
     private ASkyBlock plugin;
     private static boolean hasChorusFruit;
     private static boolean hasArmorStand;
-    private HashMap<UUID,Long> pvpCoolDown = new HashMap<UUID,Long>();
+    private HashMap<UUID,Long> pvpCoolDown = new HashMap<>();
     private static final boolean DEBUG = false;
 
     /**
@@ -126,7 +126,7 @@ public class SettingsPanel implements Listener {
         UUID uuid = player.getUniqueId();
         // Get the island settings for this player's location
         Island island = plugin.getGrid().getProtectedIslandAt(player.getLocation());
-        List<IPItem> ip = new ArrayList<IPItem>();
+        List<IPItem> ip = new ArrayList<>();
         Inventory newPanel = null;
         if (island == null) {
             //plugin.getLogger().info("DEBUG: default world settings");

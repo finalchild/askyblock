@@ -17,13 +17,11 @@
 
 package com.wasteofplastic.askyblock.panels;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.wasteofplastic.askyblock.ASkyBlock;
+import com.wasteofplastic.askyblock.Island;
+import com.wasteofplastic.askyblock.Island.SettingsFlag;
+import com.wasteofplastic.askyblock.Settings;
+import com.wasteofplastic.askyblock.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,11 +39,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.wasteofplastic.askyblock.ASkyBlock;
-import com.wasteofplastic.askyblock.Island;
-import com.wasteofplastic.askyblock.Settings;
-import com.wasteofplastic.askyblock.Island.SettingsFlag;
-import com.wasteofplastic.askyblock.util.Util;
+import java.util.*;
 
 public class WarpPanel implements Listener {
     private ASkyBlock plugin;
@@ -61,8 +55,8 @@ public class WarpPanel implements Listener {
      */
     public WarpPanel(ASkyBlock plugin) {
         this.plugin = plugin;
-        warpPanel = new ArrayList<Inventory>();
-        cachedWarps = new HashMap<UUID,ItemStack>();
+        warpPanel = new ArrayList<>();
+        cachedWarps = new HashMap<>();
         //plugin.getLogger().info("DEBUG: loading the warp panel of size " + plugin.getWarpSignsListener().listSortedWarps().size());
         // Load the cache
         for (UUID playerUUID : plugin.getWarpSignsListener().listSortedWarps()) {
@@ -74,6 +68,7 @@ public class WarpPanel implements Listener {
 
     /**
      * Only change the text of the warp
+     *
      * @param playerUUID
      */
     public void updateWarp(UUID playerUUID) {
@@ -86,7 +81,7 @@ public class WarpPanel implements Listener {
             playerSkull = updateText(playerSkull, playerUUID);
             updatePanel();
         } else {
-            plugin.getLogger().warning("Warps: update requested, but player unknown " + playerUUID.toString()); 
+            plugin.getLogger().warning("Warps: update requested, but player unknown " + playerUUID.toString());
         }
     }
 
@@ -103,8 +98,10 @@ public class WarpPanel implements Listener {
         }
         updatePanel();
     }
+
     /**
      * Adds a new warp to the cache. Does NOT update the panels
+     *
      * @param playerUUID
      */
     public void addWarp(UUID playerUUID) {
@@ -133,6 +130,7 @@ public class WarpPanel implements Listener {
 
     /**
      * Gets the skull for this player UUID
+     *
      * @param playerUUID
      * @return Player skull item
      */
@@ -157,6 +155,7 @@ public class WarpPanel implements Listener {
     /**
      * Updates the meta text on the skull by looking at the warp sign
      * This MUST be run 1 TICK AFTER the sign has been created otherwise the sign is blank
+     *
      * @param playerSkull
      * @param playerUUID
      * @return updated skull item stack
@@ -170,12 +169,12 @@ public class WarpPanel implements Listener {
         if (signLocation == null) {
             plugin.getWarpSignsListener().removeWarp(playerUUID);
             return playerSkull;
-        }            
+        }
         //plugin.getLogger().info("DEBUG: block type = " + signLocation.getBlock().getType());
         // Get the sign info if it exists
         if (signLocation.getBlock().getType().equals(Material.SIGN_POST) || signLocation.getBlock().getType().equals(Material.WALL_SIGN)) {
-            Sign sign = (Sign)signLocation.getBlock().getState();
-            List<String> lines = new ArrayList<String>(Arrays.asList(sign.getLines()));
+            Sign sign = (Sign) signLocation.getBlock().getState();
+            List<String> lines = new ArrayList<>(Arrays.asList(sign.getLines()));
             // Check for PVP and add warning
             Island island = plugin.getGrid().getIsland(playerUUID);
             if (island != null) {
@@ -205,8 +204,8 @@ public class WarpPanel implements Listener {
         if (DEBUG)
             plugin.getLogger().info("DEBUG: warps size = " + activeWarps.size());
         int size = activeWarps.size();
-        int panelNumber = size / (PANELSIZE-2);
-        int remainder = (size % (PANELSIZE-2)) + 8 + 2;
+        int panelNumber = size / (PANELSIZE - 2);
+        int remainder = (size % (PANELSIZE - 2)) + 8 + 2;
         remainder -= (remainder % 9);
         if (DEBUG)
             plugin.getLogger().info("DEBUG: panel number = " + panelNumber + " remainder = " + remainder);
@@ -214,28 +213,28 @@ public class WarpPanel implements Listener {
         // TODO: Make panel title a string
         for (i = 0; i < panelNumber; i++) {
             if (DEBUG)
-                plugin.getLogger().info("DEBUG: created panel " + (i+1));
-            warpPanel.add(Bukkit.createInventory(null, PANELSIZE, plugin.myLocale().warpsTitle + " #" + (i+1)));
+                plugin.getLogger().info("DEBUG: created panel " + (i + 1));
+            warpPanel.add(Bukkit.createInventory(null, PANELSIZE, plugin.myLocale().warpsTitle + " #" + (i + 1)));
         }
         // Make the last panel
         if (DEBUG)
-            plugin.getLogger().info("DEBUG: created panel " + (i+1));
-        warpPanel.add(Bukkit.createInventory(null, remainder, plugin.myLocale().warpsTitle + " #" + (i+1)));
+            plugin.getLogger().info("DEBUG: created panel " + (i + 1));
+        warpPanel.add(Bukkit.createInventory(null, remainder, plugin.myLocale().warpsTitle + " #" + (i + 1)));
         panelNumber = 0;
         int slot = 0;
         // Run through all the warps and add them to the inventories with nav buttons
-        for (UUID playerUUID: activeWarps) {
+        for (UUID playerUUID : activeWarps) {
             ItemStack icon = cachedWarps.get(playerUUID);
             if (icon != null) {
                 warpPanel.get(panelNumber).setItem(slot++, icon);
 
                 // Check if the panel is full
-                if (slot == PANELSIZE-2) {
+                if (slot == PANELSIZE - 2) {
                     // Add navigation buttons
                     if (panelNumber > 0) {
-                        warpPanel.get(panelNumber).setItem(slot++, new CPItem(Material.SIGN,plugin.myLocale().warpsPrevious,"warps " + (panelNumber-1),"").getItem());
+                        warpPanel.get(panelNumber).setItem(slot++, new CPItem(Material.SIGN, plugin.myLocale().warpsPrevious, "warps " + (panelNumber - 1), "").getItem());
                     }
-                    warpPanel.get(panelNumber).setItem(slot, new CPItem(Material.SIGN,plugin.myLocale().warpsNext,"warps " + (panelNumber+1),"").getItem());
+                    warpPanel.get(panelNumber).setItem(slot, new CPItem(Material.SIGN, plugin.myLocale().warpsNext, "warps " + (panelNumber + 1), "").getItem());
                     // Move onto the next panel
                     panelNumber++;
                     slot = 0;
@@ -243,7 +242,7 @@ public class WarpPanel implements Listener {
             }
         }
         if (remainder != 0 && panelNumber > 0) {
-            warpPanel.get(panelNumber).setItem(slot++, new CPItem(Material.SIGN,plugin.myLocale().warpsPrevious,"warps " + (panelNumber-1),"").getItem());
+            warpPanel.get(panelNumber).setItem(slot++, new CPItem(Material.SIGN, plugin.myLocale().warpsPrevious, "warps " + (panelNumber - 1), "").getItem());
         }
     }
 
@@ -251,14 +250,14 @@ public class WarpPanel implements Listener {
         //makePanel();
         if (panelNumber < 0) {
             panelNumber = 0;
-        } else if (panelNumber > warpPanel.size()-1) {
-            panelNumber = warpPanel.size()-1;
+        } else if (panelNumber > warpPanel.size() - 1) {
+            panelNumber = warpPanel.size() - 1;
         }
         return warpPanel.get(panelNumber);
     }
 
     @SuppressWarnings("deprecation")
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory(); // The inventory that was clicked in
         if (inventory.getName() == null) {
@@ -292,7 +291,7 @@ public class WarpPanel implements Listener {
         }
         int panelNumber = 0;
         try {
-            panelNumber = Integer.valueOf(title.substring(title.indexOf('#')+ 1));
+            panelNumber = Integer.valueOf(title.substring(title.indexOf('#') + 1));
         } catch (Exception e) {
             panelNumber = 0;
         }
@@ -303,10 +302,10 @@ public class WarpPanel implements Listener {
             if (command != null) {
                 if (command.equalsIgnoreCase(ChatColor.stripColor(plugin.myLocale().warpsNext))) {
                     player.closeInventory();
-                    Util.runCommand(player, Settings.ISLANDCOMMAND + " warps " + (panelNumber+1));
+                    Util.runCommand(player, Settings.ISLANDCOMMAND + " warps " + (panelNumber + 1));
                 } else if (command.equalsIgnoreCase(ChatColor.stripColor(plugin.myLocale().warpsPrevious))) {
                     player.closeInventory();
-                    Util.runCommand(player, Settings.ISLANDCOMMAND + " warps " + (panelNumber-1));
+                    Util.runCommand(player, Settings.ISLANDCOMMAND + " warps " + (panelNumber - 1));
                 } else {
                     player.closeInventory();
                     Util.sendMessage(player, ChatColor.GREEN + plugin.myLocale(player.getUniqueId()).warpswarpToPlayersSign.replace("<player>", command));

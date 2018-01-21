@@ -78,7 +78,7 @@ public class IslandGuard1_9 implements Listener {
 
     public IslandGuard1_9(final ASkyBlock plugin) {
         this.plugin = plugin;
-        this.thrownPotions = new HashMap<Integer, UUID>();
+        this.thrownPotions = new HashMap<>();
         if (!Settings.allowPushing) {
             // try to remove the team from the scoreboard
             try {
@@ -315,7 +315,7 @@ public class IslandGuard1_9 implements Listener {
             e.blockList().clear();
         } else {
             if (!Settings.allowChestDamage) {
-                List<Block> toberemoved = new ArrayList<Block>();
+                List<Block> toberemoved = new ArrayList<>();
                 // Save the chest blocks in a list
                 for (Block b : e.blockList()) {
                     switch (b.getType()) {
@@ -489,7 +489,7 @@ public class IslandGuard1_9 implements Listener {
             return;
         }
         // Try to get the shooter
-        Projectile projectile = (Projectile) e.getEntity();
+        Projectile projectile = e.getEntity();
         if (DEBUG)
             plugin.getLogger().info("shooter = " + projectile.getShooter());
         if (projectile.getShooter() != null && projectile.getShooter() instanceof Player) {

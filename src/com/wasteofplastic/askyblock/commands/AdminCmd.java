@@ -91,13 +91,13 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
  */
 public class AdminCmd implements CommandExecutor, TabCompleter {
     private ASkyBlock plugin;
-    private List<UUID> removeList = new ArrayList<UUID>();
+    private List<UUID> removeList = new ArrayList<>();
     private boolean purgeFlag = false;
     private boolean confirmReq = false;
     private boolean confirmOK = false;
     private int confirmTimer = 0;
     private boolean purgeUnownedConfirm = false;
-    private HashMap<String, Island> unowned = new HashMap<String,Island>();
+    private HashMap<String, Island> unowned = new HashMap<>();
     private boolean asyncPending = false;
 
     public AdminCmd(ASkyBlock aSkyBlock) {
@@ -146,7 +146,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
             // Permissions are split into admin permissions and mod permissions
             // Listed in alphabetical order
             Player player = (Player) sender;
-            List<String> helpMessages = new ArrayList<String>();
+            List<String> helpMessages = new ArrayList<>();
             helpMessages.add(plugin.myLocale(player.getUniqueId()).adminHelpHelp);
             if (VaultHelper.checkPerm(player, Settings.PERMPREFIX + "mod.challenges") || player.isOp()) {
                 helpMessages.add(plugin.myLocale(player.getUniqueId()).helpColor + "/" + label + " clearchallengereset <challenge>:" + ChatColor.WHITE + " " + plugin.myLocale(player.getUniqueId()).adminHelpclearChallengeReset);
@@ -328,9 +328,9 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     // Say the island name
                     Util.sendMessage(sender, plugin.getGrid().getIslandName(playerUUID));                    
                 } else {
-                    String name = split[2];
+                    StringBuilder name = new StringBuilder(split[2]);
                     for (int i = 3; i < split.length; i++) {
-                        name = name + " " + split[i];
+                        name.append(" ").append(split[i]);
                     }
                     if (name.length() < Settings.minNameLength) {
                         Util.sendMessage(sender, ChatColor.RED + (plugin.myLocale().errorTooShort).replace("[length]", String.valueOf(Settings.minNameLength)));
@@ -340,7 +340,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                         Util.sendMessage(sender, ChatColor.RED + (plugin.myLocale().errorTooLong).replace("[length]", String.valueOf(Settings.maxNameLength)));
                         return true;
                     }
-                    plugin.getGrid().setIslandName(playerUUID, ChatColor.translateAlternateColorCodes('&', name));
+                    plugin.getGrid().setIslandName(playerUUID, ChatColor.translateAlternateColorCodes('&', name.toString()));
                     Util.sendMessage(sender, ChatColor.GREEN + plugin.myLocale().generalSuccess);
                 }
                 return true;
@@ -378,7 +378,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                             Util.sendMessage(sender, plugin.myLocale().challengeslevel + ": " + level);
                         }
                         // Collect and sort
-                        Collection<String> result = new TreeSet<String>(Collator.getInstance());
+                        Collection<String> result = new TreeSet<>(Collator.getInstance());
                         for (Material mat : LavaCheck.getStats().get(level).elementSet()) {
                             result.add("   " + Util.prettifyText(mat.toString()) + ": " + LavaCheck.getStats().get(level).count(mat) + "/" + LavaCheck.getStats().get(level).size() + " or " 
                                     + ((long)((double)LavaCheck.getStats().get(level).count(mat)/LavaCheck.getStats().get(level).size()*100)) 
@@ -462,7 +462,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
 
                                 @Override
                                 public void run() {
-                                    Map<UUID, Multiset<EntityType>> result = new HashMap<UUID, Multiset<EntityType>>();
+                                    Map<UUID, Multiset<EntityType>> result = new HashMap<>();
                                     // Find out where the entities are
                                     for (Entity entity: allEntities) {
                                         //System.out.println("DEBUG " + entity.getType().toString());
@@ -489,12 +489,12 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                                         }
                                     }
                                     // Sort by the number of entities on each island
-                                    TreeMap<Integer, List<UUID>> topEntityIslands = new TreeMap<Integer, List<UUID>>();
+                                    TreeMap<Integer, List<UUID>> topEntityIslands = new TreeMap<>();
                                     for (Entry<UUID, Multiset<EntityType>> entry : result.entrySet()) {
                                         int numOfEntities = entry.getValue().size();
                                         List<UUID> players = topEntityIslands.get(numOfEntities);
                                         if (players == null) {
-                                            players = new ArrayList<UUID>();
+                                            players = new ArrayList<>();
                                         }
                                         players.add(entry.getKey());
                                         topEntityIslands.put(numOfEntities, players);
@@ -520,7 +520,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                                                     // Go through the owners one by one
                                                     for (UUID owner : owners) {
                                                         Util.sendMessage(sender, "#" + rank + " " + plugin.getPlayers().getName(owner) + " = " + numOfEntities);
-                                                        String content = "";
+                                                        StringBuilder content = new StringBuilder();
                                                         Multiset<EntityType> entityCount = finalResult.get(owner);
                                                         for (EntityType entity: entityCount.elementSet()) {
                                                             int num = entityCount.count(entity);
@@ -532,13 +532,13 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                                                             } else if (num > 40) {
                                                                 color = ChatColor.RED.toString();
                                                             }
-                                                            content += Util.prettifyText(entity.toString()) + " x " + color + num + ChatColor.WHITE + ", ";
+                                                            content.append(Util.prettifyText(entity.toString())).append(" x ").append(color).append(num).append(ChatColor.WHITE).append(", ");
                                                         }
                                                         int lastComma = content.lastIndexOf(",");
                                                         // plugin.getLogger().info("DEBUG: last comma " +
                                                         // lastComma);
                                                         if (lastComma > 0) {
-                                                            content = content.substring(0, lastComma);
+                                                            content = new StringBuilder(content.substring(0, lastComma));
                                                         }
                                                         Util.sendMessage(sender, "  " + content);
 
@@ -794,7 +794,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                                 }
                             };
                             for (File file: playerFolder.listFiles(ymlFilter)) {
-                                List<String> playerFileContents = new ArrayList<String>();
+                                List<String> playerFileContents = new ArrayList<>();
                                 done++;
                                 try {
                                     Scanner scanner = new Scanner(file);
@@ -858,7 +858,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     Settings.defaultLanguage = split[1];
 
                     // Load languages
-                    HashMap<String,ASLocale> availableLocales = new HashMap<String,ASLocale>();
+                    HashMap<String,ASLocale> availableLocales = new HashMap<>();
                     FileLister fl = new FileLister(plugin);
                     try {
                         int index = 1;
@@ -1025,11 +1025,11 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                         // Show help
                         Util.sendMessage(sender, plugin.myLocale().helpColor + "/" + label + " settingsreset [help | all | flag]:" + ChatColor.WHITE + " " + plugin.myLocale().adminHelpSettingsReset);
                         Util.sendMessage(sender, ChatColor.GREEN + "flag options: ");
-                        String commaList = "all";
+                        StringBuilder commaList = new StringBuilder("all");
                         for (SettingsFlag flag: SettingsFlag.values()) {
-                            commaList += ", " + flag.toString();
+                            commaList.append(", ").append(flag.toString());
                         }
-                        Util.sendMessage(sender, commaList);
+                        Util.sendMessage(sender, commaList.toString());
                         return true;
                     }
                 }
@@ -2383,17 +2383,17 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
             List<UUID> banList = plugin.getPlayers().getBanList(playerUUID);
             if (!banList.isEmpty()) {
                 Util.sendMessage(sender, ChatColor.YELLOW + plugin.myLocale().adminInfoBannedPlayers + ":");
-                String list = "";
+                StringBuilder list = new StringBuilder();
                 for (UUID uuid : banList) {
                     Player target = plugin.getServer().getPlayer(uuid);
                     if (target != null) {
                         //online
-                        list += target.getName() + ", ";
+                        list.append(target.getName()).append(", ");
                     } else {
-                        list += plugin.getPlayers().getName(uuid) + ", ";
+                        list.append(plugin.getPlayers().getName(uuid)).append(", ");
                     }
                 }
-                if (!list.isEmpty()) {
+                if (list.length() > 0) {
                     Util.sendMessage(sender, ChatColor.RED + list.substring(0, list.length()-2));
                 }
             }
@@ -2531,7 +2531,7 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] args) {
-        final List<String> options = new ArrayList<String>();
+        final List<String> options = new ArrayList<>();
         String lastArg = (args.length != 0 ? args[args.length - 1] : "");
 
         if (!(sender instanceof Player)) {

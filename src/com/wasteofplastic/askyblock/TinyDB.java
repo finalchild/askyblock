@@ -48,7 +48,7 @@ public class TinyDB {
      */
     public TinyDB(ASkyBlock plugin) {       
         this.plugin = plugin;
-        this.treeMap = new ConcurrentHashMap<String,UUID>();
+        this.treeMap = new ConcurrentHashMap<>();
         File database = new File(plugin.getDataFolder(), "name-uuid.txt");
         if (!database.exists()) {
             // Import from player files. Done async so may take a while

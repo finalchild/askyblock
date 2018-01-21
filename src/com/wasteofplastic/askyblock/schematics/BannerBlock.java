@@ -50,7 +50,7 @@ public class BannerBlock {
 
     // ss, tt
     static {
-        patternKey = new HashMap<String, PatternType>();
+        patternKey = new HashMap<>();
         patternKey.put("", PatternType.BASE);
         patternKey.put("bo", PatternType.BORDER);
         patternKey.put("bri", PatternType.BRICKS);
@@ -118,7 +118,7 @@ public class BannerBlock {
             // baseColor green = 10
             bannerBaseColor = DyeColor.getByDyeData((byte) baseColor);
             // Do the patterns (no idea if this will work or not)
-            bannerPattern = new ArrayList<Pattern>();
+            bannerPattern = new ArrayList<>();
             ListTag patterns = (ListTag) tileData.get("Patterns");
             if (patterns != null) {
                 for (Tag pattern : patterns.getValue()) {

@@ -51,7 +51,7 @@ public class CPItem {
         item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         // Handle multi line names (split by |)
-        List<String> desc = new ArrayList<String>(Arrays.asList(name.split("\\|")));
+        List<String> desc = new ArrayList<>(Arrays.asList(name.split("\\|")));
         meta.setDisplayName(ChatColor.WHITE + desc.get(0));
         if (desc.size() > 1) {
             desc.remove(0); // Remove the name
@@ -66,7 +66,7 @@ public class CPItem {
         this.item = itemStack;
         ItemMeta meta = item.getItemMeta();
         // Handle multi line names (split by |)
-        List<String> desc = new ArrayList<String>(Arrays.asList(name.split("\\|")));
+        List<String> desc = new ArrayList<>(Arrays.asList(name.split("\\|")));
         meta.setDisplayName(ChatColor.WHITE + desc.get(0));
         if (desc.size() > 1) {
             desc.remove(0); // Remove the name

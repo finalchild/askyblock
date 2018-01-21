@@ -43,7 +43,7 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 
 public class BiomesPanel implements Listener {
     private ASkyBlock plugin;
-    private HashMap<UUID, List<BiomeItem>> biomeItems = new HashMap<UUID, List<BiomeItem>>();
+    private HashMap<UUID, List<BiomeItem>> biomeItems = new HashMap<>();
 
     /**
      * @param plugin
@@ -62,7 +62,7 @@ public class BiomesPanel implements Listener {
         // Go through the available biomes and check permission
 
         int slot = 0;
-        List<BiomeItem> items = new ArrayList<BiomeItem>();
+        List<BiomeItem> items = new ArrayList<>();
         for (String biomeName : plugin.getConfig().getConfigurationSection("biomes").getKeys(false)) {
             // Check the biome is actually real
             try {

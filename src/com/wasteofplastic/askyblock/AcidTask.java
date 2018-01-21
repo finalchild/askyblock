@@ -27,7 +27,7 @@ public class AcidTask {
     public AcidTask(final ASkyBlock plugin) {
         this.plugin = plugin;
         // Initialize water item list
-        itemsInWater = new HashSet<UUID>();
+        itemsInWater = new HashSet<>();
         // This part will kill monsters if they fall into the water
         // because it
         // is acid
@@ -75,7 +75,7 @@ public class AcidTask {
                     //plugin.getLogger().info("DEBUG: running task every " + Settings.acidItemDestroyTime);
                     List<Entity> entList = ASkyBlock.getIslandWorld().getEntities();
                     // Clean up the itemsInWater list
-                    Set<UUID> newItemsInWater = new HashSet<UUID>();
+                    Set<UUID> newItemsInWater = new HashSet<>();
                     for (Entity current: entList) {
                         if (current.getType() != null && current.getType().equals(EntityType.DROPPED_ITEM)) {
                             if ((current.getLocation().getBlock().getType() == Material.WATER)

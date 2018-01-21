@@ -56,7 +56,7 @@ import com.google.common.collect.Multisets;
  */
 public class LevelCalcByChunk {
 
-    private List<String> reportLines = new ArrayList<String>();
+    private List<String> reportLines = new ArrayList<>();
 
     public LevelCalcByChunk(ASkyBlock plugin, UUID targetPlayer, CommandSender asker) {
         this(plugin, targetPlayer, asker, false);
@@ -122,7 +122,7 @@ public class LevelCalcByChunk {
             final World world = plugin.getPlayers().getIslandLocation(targetPlayer).getWorld();
             // Get the chunks
             //long nano = System.nanoTime();
-            Set<ChunkSnapshot> chunkSnapshot = new HashSet<ChunkSnapshot>();
+            Set<ChunkSnapshot> chunkSnapshot = new HashSet<>();
             for (int x = island.getMinProtectedX(); x < (island.getMinProtectedX() + island.getProtectionSize() + 16); x += 16) {
                 for (int z = island.getMinProtectedZ(); z < (island.getMinProtectedZ() + island.getProtectionSize() + 16); z += 16) {
                     if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
@@ -169,13 +169,13 @@ public class LevelCalcByChunk {
                         }
                     }
                     if (Settings.levelLogging || report) {
-                        mdLog = new ArrayList<MaterialData>();
-                        uwLog = new ArrayList<MaterialData>();
-                        noCountLog = new ArrayList<MaterialData>();
-                        overflowLog = new ArrayList<MaterialData>();
+                        mdLog = new ArrayList<>();
+                        uwLog = new ArrayList<>();
+                        noCountLog = new ArrayList<>();
+                        overflowLog = new ArrayList<>();
                     }
                     // Copy the limits hashmap
-                    HashMap<MaterialData, Integer> limitCount = new HashMap<MaterialData, Integer>(Settings.blockLimits);
+                    HashMap<MaterialData, Integer> limitCount = new HashMap<>(Settings.blockLimits);
                     // Calculate the island score
                     long blockCount = 0;
                     long underWaterBlockCount = 0;
@@ -302,9 +302,7 @@ public class LevelCalcByChunk {
                             reportLines.add("Total number of underwater blocks = " + String.format("%,d",uwCount.size()));
                             Iterable<Multiset.Entry<MaterialData>> entriesSortedByCount = 
                                     Multisets.copyHighestCountFirst(uwCount).entrySet();
-                            Iterator<Entry<MaterialData>> it = entriesSortedByCount.iterator();
-                            while (it.hasNext()) {
-                                Entry<MaterialData> type = it.next();
+                            for (Entry<MaterialData> type : entriesSortedByCount) {
                                 int value = 0;
                                 if (Settings.blockValues.containsKey(type)) {
                                     // Specific
@@ -314,8 +312,8 @@ public class LevelCalcByChunk {
                                     value = Settings.blockValues.get(new MaterialData(type.getElement().getItemType()));
                                 }
                                 if (value > 0) {
-                                    reportLines.add(type.getElement().toString() + ":" 
-                                            + String.format("%,d",type.getCount()) + " blocks x " + value + " = " + (value * type.getCount()));
+                                    reportLines.add(type.getElement().toString() + ":"
+                                            + String.format("%,d", type.getCount()) + " blocks x " + value + " = " + (value * type.getCount()));
                                     total += (value * type.getCount());
                                 }
                             }

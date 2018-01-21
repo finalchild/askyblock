@@ -65,11 +65,11 @@ public class GridManager {
     private static final String ISLANDNAMES_FILENAME = "islandnames.yml";
     private ASkyBlock plugin;
     // 2D islandGrid of islands, x,z
-    private TreeMap<Integer, TreeMap<Integer, Island>> islandGrid = new TreeMap<Integer, TreeMap<Integer, Island>>();
+    private TreeMap<Integer, TreeMap<Integer, Island>> islandGrid = new TreeMap<>();
     // private TreeMap<Integer,TreeMap<Integer,PlayerIsland>> protectionGrid = new
     // TreeMap<Integer,TreeMap<Integer,PlayerIsland>>();
     // Reverse lookup for owner, if they exists
-    private HashMap<UUID, Island> ownershipMap = new HashMap<UUID, Island>();
+    private HashMap<UUID, Island> ownershipMap = new HashMap<>();
     private File islandFile;
     private Island spawn;
     private File islandNameFile;
@@ -112,7 +112,7 @@ public class GridManager {
             YamlConfiguration islandYaml = new YamlConfiguration();
             try {
                 islandYaml.load(islandFile);
-                List<String> islandList = new ArrayList<String>();
+                List<String> islandList = new ArrayList<>();
                 if (islandYaml.contains(Settings.worldName)) {
                     // Load the island settings key
                     List<String> settingsKey = islandYaml.getStringList(SETTINGS_KEY);
@@ -457,7 +457,7 @@ public class GridManager {
         final File islandFile = new File(plugin.getDataFolder(), ISLANDS_FILENAME);
         final YamlConfiguration islandYaml = new YamlConfiguration();
         // Save the settings config key
-        List<String> islandSettings = new ArrayList<String>();
+        List<String> islandSettings = new ArrayList<>();
         for (SettingsFlag flag: SettingsFlag.values()) {
             islandSettings.add(flag.toString());
         } 
@@ -470,12 +470,9 @@ public class GridManager {
             islandYaml.set("spawn.settings", getSpawn().getSettings());  
         }
         // Save the regular islands
-        List<String> islandList = new ArrayList<String>();
-        Iterator<TreeMap<Integer, Island>> it = islandGrid.values().iterator();
-        while (it.hasNext()) {
-            Iterator<Island> islandIt = it.next().values().iterator();
-            while (islandIt.hasNext()) {
-                Island island = islandIt.next();
+        List<String> islandList = new ArrayList<>();
+        for (TreeMap<Integer, Island> integerIslandTreeMap : islandGrid.values()) {
+            for (Island island : integerIslandTreeMap.values()) {
                 if (!island.isSpawn()) {
                     islandList.add(island.save());
                 }
@@ -713,7 +710,7 @@ public class GridManager {
         } else {
             // Add island
             //plugin.getLogger().info("DEBUG: added island to grid at " + newIsland.getMinX() + "," + newIsland.getMinZ());
-            TreeMap<Integer, Island> zEntry = new TreeMap<Integer, Island>();
+            TreeMap<Integer, Island> zEntry = new TreeMap<>();
             zEntry.put(newIsland.getMinZ(), newIsland);
             islandGrid.put(newIsland.getMinX(), zEntry);
         }
@@ -1338,7 +1335,7 @@ public class GridManager {
         }
         // Not in the grid, so do it the old way
         // Make a list of test locations and test them
-        Set<Location> islandTestLocations = new HashSet<Location>();
+        Set<Location> islandTestLocations = new HashSet<>();
         if (plugin.getPlayers().hasIsland(player.getUniqueId())) {
             islandTestLocations.add(plugin.getPlayers().getIslandLocation(player.getUniqueId()));
         } else if (plugin.getPlayers().inTeam(player.getUniqueId())) {
@@ -1425,7 +1422,7 @@ public class GridManager {
      */
     public boolean locationIsAtHome(final Player player, boolean coop, Location loc) {
         // Make a list of test locations and test them
-        Set<Location> islandTestLocations = new HashSet<Location>();
+        Set<Location> islandTestLocations = new HashSet<>();
         if (plugin.getPlayers().hasIsland(player.getUniqueId())) {
             islandTestLocations.add(plugin.getPlayers().getIslandLocation(player.getUniqueId()));
             // If new Nether
@@ -1641,7 +1638,7 @@ public class GridManager {
      * @return a list of unowned islands
      */
     public HashMap<String, Island> getUnownedIslands() {
-        HashMap<String, Island> result = new HashMap<String,Island>();
+        HashMap<String, Island> result = new HashMap<>();
         for (Entry<Integer, TreeMap<Integer, Island>> x : islandGrid.entrySet()) {
             for (Island island : x.getValue().values()) {
                 //plugin.getLogger().info("DEBUG: checking island at " + island.getCenter());

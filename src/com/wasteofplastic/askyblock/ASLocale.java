@@ -38,7 +38,7 @@ import com.wasteofplastic.askyblock.Island.SettingsFlag;
  */
 public class ASLocale {
 
-    private final static Set<String> TITLE_COLORS = new HashSet<String>(Arrays.asList(
+    private final static Set<String> TITLE_COLORS = new HashSet<>(Arrays.asList(
             "black",
             "dark_blue",
             "dark_green",
@@ -55,7 +55,7 @@ public class ASLocale {
             "light_purple",
             "yellow",
             "white"
-            ));
+    ));
 
 
     // Localization Strings
@@ -785,7 +785,7 @@ public class ASLocale {
         igsAllowed = ChatColor.translateAlternateColorCodes('&', locale.getString("islandguardsettings.allowed", "Allowed"));
         igsDisallowed = ChatColor.translateAlternateColorCodes('&', locale.getString("islandguardsettings.disallowed", "Disallowed"));
         // Developer - add new text for GUI icons here and in the local files
-        igs = new HashMap<SettingsFlag, String>();
+        igs = new HashMap<>();
         igs.put(SettingsFlag.ACID_DAMAGE, ChatColor.translateAlternateColorCodes('&', locale.getString("islandguardsettings.aciddamage", "Acid Damage")));
         igs.put(SettingsFlag.ANVIL, ChatColor.translateAlternateColorCodes('&', locale.getString("islandguardsettings.anvil", "Visitor anvil use")));
         igs.put(SettingsFlag.ARMOR_STAND, ChatColor.translateAlternateColorCodes('&', locale.getString("islandguardsettings.armorstand", "Visitor armor stand use")));

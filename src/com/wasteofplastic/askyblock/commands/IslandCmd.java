@@ -90,32 +90,32 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 public class IslandCmd implements CommandExecutor, TabCompleter {
     private static final boolean DEBUG = false;
     public boolean levelCalcFreeFlag = true;
-    private static HashMap<String, Schematic> schematics = new HashMap<String, Schematic>();
+    private static HashMap<String, Schematic> schematics = new HashMap<>();
     private ASkyBlock plugin;
     // The island reset confirmation
-    private HashMap<UUID, Boolean> confirm = new HashMap<UUID, Boolean>();
+    private HashMap<UUID, Boolean> confirm = new HashMap<>();
     // Last island
     Location last = null;
     // List of players in the middle of choosing an island schematic
-    private Set<UUID> pendingNewIslandSelection = new HashSet<UUID>();
-    private Set<UUID> resettingIsland = new HashSet<UUID>();
+    private Set<UUID> pendingNewIslandSelection = new HashSet<>();
+    private Set<UUID> resettingIsland = new HashSet<>();
     /**
      * Invite list - invited player name string (key), inviter name string
      * (value)
      */
-    private final HashMap<UUID, UUID> inviteList = new HashMap<UUID, UUID>();
+    private final HashMap<UUID, UUID> inviteList = new HashMap<>();
     // private PlayerCache players;
     // The time a player has to wait until they can reset their island again
-    private HashMap<UUID, Long> resetWaitTime = new HashMap<UUID, Long>();
+    private HashMap<UUID, Long> resetWaitTime = new HashMap<>();
     // Level calc cool down
-    private HashMap<UUID, Long> levelWaitTime = new HashMap<UUID, Long>();
+    private HashMap<UUID, Long> levelWaitTime = new HashMap<>();
 
     // Level calc checker
     BukkitTask checker = null;
     // To choose an island randomly
     private final Random random = new Random();
-    private HashMap<UUID, Location> islandSpot = new HashMap<UUID, Location>();
-    private List<UUID> leavingPlayers = new ArrayList<UUID>();
+    private HashMap<UUID, Location> islandSpot = new HashMap<>();
+    private List<UUID> leavingPlayers = new ArrayList<>();
 
     /**
      * Constructor
@@ -351,7 +351,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                         }
                         // Island companion
                         List<String> companion = schemSection.getStringList("schematics." + key + ".companion");
-                        List<EntityType> companionTypes = new ArrayList<EntityType>();
+                        List<EntityType> companionTypes = new ArrayList<>();
                         if (!companion.isEmpty()) {
                             for (String companionType : companion) {
                                 companionType = companionType.toUpperCase();
@@ -373,7 +373,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                         // Companion names
                         List<String> companionNames = schemSection.getStringList("schematics." + key + ".companionnames");
                         if (!companionNames.isEmpty()) {
-                            List<String> names = new ArrayList<String>();
+                            List<String> names = new ArrayList<>();
                             for (String companionName : companionNames) {
                                 names.add(ChatColor.translateAlternateColorCodes('&', companionName));
                             }
@@ -394,15 +394,22 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                                             tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[2]));
                                         } else if (amountdata.length == 4) {
                                             // Extended or splash potions
-                                            if (amountdata[2].equals("EXTENDED")) {
-                                                Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).extend();
-                                                tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
-                                            } else if (amountdata[2].equals("SPLASH")) {
-                                                Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).splash();
-                                                tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
-                                            } else if (amountdata[2].equals("EXTENDEDSPLASH")) {
-                                                Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).extend().splash();
-                                                tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
+                                            switch (amountdata[2]) {
+                                                case "EXTENDED": {
+                                                    Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).extend();
+                                                    tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
+                                                    break;
+                                                }
+                                                case "SPLASH": {
+                                                    Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).splash();
+                                                    tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
+                                                    break;
+                                                }
+                                                case "EXTENDEDSPLASH": {
+                                                    Potion chestPotion = new Potion(PotionType.valueOf(amountdata[1])).extend().splash();
+                                                    tempChest[i++] = chestPotion.toItemStack(Integer.parseInt(amountdata[3]));
+                                                    break;
+                                                }
                                             }
                                         }
                                     } else {
@@ -617,7 +624,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      * @return List of schematics this player can use based on their permission level
      */
     public List<Schematic> getSchematics(Player player, boolean ignoreNoPermission) {
-        List<Schematic> result = new ArrayList<Schematic>();
+        List<Schematic> result = new ArrayList<>();
         // Find out what schematics this player can choose from
         //Bukkit.getLogger().info("DEBUG: Checking schematics for " + player.getName());
         for (Schematic schematic : schematics.values()) {
@@ -1000,7 +1007,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
             return true;
         }
         final UUID teamLeader = plugin.getPlayers().getTeamLeader(playerUUID);
-        List<UUID> teamMembers = new ArrayList<UUID>();
+        List<UUID> teamMembers = new ArrayList<>();
         if (teamLeader != null) {
             teamMembers = plugin.getPlayers().getMembers(teamLeader);
         }
@@ -1009,9 +1016,9 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
             // Naming of island
             if (VaultHelper.checkPerm(player, Settings.PERMPREFIX + "island.name")
                     && plugin.getPlayers().hasIsland(playerUUID)) {
-                String name = split[1];
+                StringBuilder name = new StringBuilder(split[1]);
                 for (int i = 2; i < split.length; i++) {
-                    name = name + " " + split[i];
+                    name.append(" ").append(split[i]);
                 }
                 if (name.length() < Settings.minNameLength) {
                     Util.sendMessage(player, ChatColor.RED + (plugin.myLocale(player.getUniqueId()).errorTooShort).replace("[length]", String.valueOf(Settings.minNameLength)));
@@ -1021,7 +1028,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                     Util.sendMessage(player, ChatColor.RED + (plugin.myLocale(player.getUniqueId()).errorTooLong).replace("[length]", String.valueOf(Settings.maxNameLength)));
                     return true;
                 }
-                plugin.getGrid().setIslandName(playerUUID, ChatColor.translateAlternateColorCodes('&', name));
+                plugin.getGrid().setIslandName(playerUUID, ChatColor.translateAlternateColorCodes('&', name.toString()));
                 Util.sendMessage(player, ChatColor.GREEN + plugin.myLocale(player.getUniqueId()).generalSuccess);
                 return true;
             } else {
@@ -1427,14 +1434,14 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
                             player.openInventory(plugin.getWarpPanel().getWarpPanel(0));
                         } else {
                             Boolean hasWarp = false;
-                            String wlist = "";
+                            StringBuilder wlist = new StringBuilder();
                             for (UUID w : warpList) {
                                 if (w == null)
                                     continue;
-                                if (wlist.isEmpty()) {
-                                    wlist = plugin.getPlayers().getName(w);
+                                if (wlist.length() == 0) {
+                                    wlist = new StringBuilder(plugin.getPlayers().getName(w));
                                 } else {
-                                    wlist += ", " + plugin.getPlayers().getName(w);
+                                    wlist.append(", ").append(plugin.getPlayers().getName(w));
                                 }
                                 if (w.equals(playerUUID)) {
                                     hasWarp = true;
@@ -3092,7 +3099,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      * @param player
      */
     private void displayLocales(Player player) {
-        TreeMap<Integer,String> langs = new TreeMap<Integer,String>();
+        TreeMap<Integer,String> langs = new TreeMap<>();
         for (ASLocale locale : plugin.getAvailableLocales().values()) {
             if (!locale.getLocaleName().equalsIgnoreCase("locale")) {
                 langs.put(locale.getIndex(), locale.getLanguageName() + " (" + locale.getCountryName() + ")"); 
@@ -3259,7 +3266,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      */
     public boolean onRestartWaitTime(final Player player) {
         if (resetWaitTime.containsKey(player.getUniqueId())) {
-            if (resetWaitTime.get(player.getUniqueId()).longValue() > Calendar.getInstance().getTimeInMillis()) {
+            if (resetWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
                 return true;
             }
 
@@ -3271,7 +3278,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
 
     public boolean onLevelWaitTime(final Player player) {
         if (levelWaitTime.containsKey(player.getUniqueId())) {
-            if (levelWaitTime.get(player.getUniqueId()).longValue() > Calendar.getInstance().getTimeInMillis()) {
+            if (levelWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
                 return true;
             }
 
@@ -3287,7 +3294,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      * @param player
      */
     private void setResetWaitTime(final Player player) {
-        resetWaitTime.put(player.getUniqueId(), Long.valueOf(Calendar.getInstance().getTimeInMillis() + Settings.resetWait * 1000));
+        resetWaitTime.put(player.getUniqueId(), Calendar.getInstance().getTimeInMillis() + Settings.resetWait * 1000);
     }
 
     /**
@@ -3296,7 +3303,7 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      * @param player
      */
     private void setLevelWaitTime(final Player player) {
-        levelWaitTime.put(player.getUniqueId(), Long.valueOf(Calendar.getInstance().getTimeInMillis() + Settings.levelWait * 1000));
+        levelWaitTime.put(player.getUniqueId(), Calendar.getInstance().getTimeInMillis() + Settings.levelWait * 1000);
     }
 
     /**
@@ -3308,8 +3315,8 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
      */
     private long getResetWaitTime(final Player player) {
         if (resetWaitTime.containsKey(player.getUniqueId())) {
-            if (resetWaitTime.get(player.getUniqueId()).longValue() > Calendar.getInstance().getTimeInMillis()) {
-                return (resetWaitTime.get(player.getUniqueId()).longValue() - Calendar.getInstance().getTimeInMillis()) / 1000;
+            if (resetWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
+                return (resetWaitTime.get(player.getUniqueId()) - Calendar.getInstance().getTimeInMillis()) / 1000;
             }
 
             return 0L;
@@ -3320,8 +3327,8 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
 
     private long getLevelWaitTime(final Player player) {
         if (levelWaitTime.containsKey(player.getUniqueId())) {
-            if (levelWaitTime.get(player.getUniqueId()).longValue() > Calendar.getInstance().getTimeInMillis()) {
-                return (levelWaitTime.get(player.getUniqueId()).longValue() - Calendar.getInstance().getTimeInMillis()) / 1000;
+            if (levelWaitTime.get(player.getUniqueId()) > Calendar.getInstance().getTimeInMillis()) {
+                return (levelWaitTime.get(player.getUniqueId()) - Calendar.getInstance().getTimeInMillis()) / 1000;
             }
 
             return 0L;
@@ -3342,22 +3349,22 @@ public class IslandCmd implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         final Player player = (Player) sender;
 
         if (!VaultHelper.checkPerm(player, Settings.PERMPREFIX + "island.create")) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         final UUID playerUUID = player.getUniqueId();
         final UUID teamLeader = plugin.getPlayers().getTeamLeader(playerUUID);
-        List<UUID> teamMembers = new ArrayList<UUID>();
+        List<UUID> teamMembers = new ArrayList<>();
         if (teamLeader != null) {
             teamMembers = plugin.getPlayers().getMembers(teamLeader);
         }
 
-        final List<String> options = new ArrayList<String>();
+        final List<String> options = new ArrayList<>();
         String lastArg = (args.length != 0 ? args[args.length - 1] : "");
 
         switch (args.length) {

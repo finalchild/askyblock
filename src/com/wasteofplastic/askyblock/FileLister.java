@@ -20,7 +20,7 @@ public final class FileLister {
     }
 
     public List<String> list() throws IOException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         // Check if the locale folder exists
         // If it does exist, then no files from the JAR will be added if they are missing.

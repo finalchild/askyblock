@@ -136,7 +136,7 @@ public class ASkyBlock extends JavaPlugin {
     private Metrics metrics;
 
     // Localization Strings
-    private HashMap<String,ASLocale> availableLocales = new HashMap<String,ASLocale>();
+    private HashMap<String,ASLocale> availableLocales = new HashMap<>();
 
     /**
      * Returns the World object for the island world named in config.yml.

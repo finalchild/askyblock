@@ -36,7 +36,7 @@ public class InventorySave {
      * Saves the inventory of a player
      */
     public InventorySave(ASkyBlock plugin) {
-        inventories = new HashMap<UUID, InventoryStore>();
+        inventories = new HashMap<>();
     }
 
     /** Save player's inventory

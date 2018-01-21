@@ -40,7 +40,7 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 
 public class SchematicsPanel implements Listener {
     private ASkyBlock plugin;
-    private HashMap<UUID, List<SPItem>> schematicItems = new HashMap<UUID, List<SPItem>>();
+    private HashMap<UUID, List<SPItem>> schematicItems = new HashMap<>();
 
     /**
      * @param plugin
@@ -58,7 +58,7 @@ public class SchematicsPanel implements Listener {
     public Inventory getPanel(Player player) {
         // Go through the available schematics for this player
         int slot = 0;
-        List<SPItem> items = new ArrayList<SPItem>();
+        List<SPItem> items = new ArrayList<>();
         List<Schematic> availableSchems = plugin.getIslandCmd().getSchematics(player, false);
         // Add an info icon
         //items.add(new SPItem(Material.MAP,"Choose your island", "Pick from the selection...",slot++));

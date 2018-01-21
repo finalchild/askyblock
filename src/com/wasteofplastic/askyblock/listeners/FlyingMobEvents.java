@@ -55,7 +55,7 @@ public class FlyingMobEvents implements Listener {
      */
     public FlyingMobEvents(ASkyBlock plugin) {
         this.plugin = plugin;
-        this.mobSpawnInfo = new WeakHashMap<Entity, Island>();
+        this.mobSpawnInfo = new WeakHashMap<>();
         new BukkitRunnable() {
 
             public void run() {

@@ -85,20 +85,20 @@ public class Settings {
     /**
      * Default world protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultWorldSettings = new HashMap<SettingsFlag, Boolean>();
+    public static HashMap<SettingsFlag, Boolean> defaultWorldSettings = new HashMap<>();
 
     /**
      * Default island protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultIslandSettings = new HashMap<SettingsFlag, Boolean>();
+    public static HashMap<SettingsFlag, Boolean> defaultIslandSettings = new HashMap<>();
     /**
      * Default spawn protection settings
      */
-    public static HashMap<SettingsFlag, Boolean> defaultSpawnSettings = new HashMap<SettingsFlag, Boolean>();
+    public static HashMap<SettingsFlag, Boolean> defaultSpawnSettings = new HashMap<>();
     /**
      * Visitors settings to show in the GUI
      */
-    public static HashMap<SettingsFlag, Boolean> visitorSettings = new HashMap<SettingsFlag, Boolean>();
+    public static HashMap<SettingsFlag, Boolean> visitorSettings = new HashMap<>();
     // Flymode
     public static int flyTimeOutside;
     
@@ -124,7 +124,7 @@ public class Settings {
     public static int abandonedIslandLevel;
     public static Double startingMoney;
     public static double netherSpawnRadius;
-    public static List<PotionEffectType> acidDamageType = new ArrayList<PotionEffectType>();
+    public static List<PotionEffectType> acidDamageType = new ArrayList<>();
     public static boolean resetMoney;
     public static boolean damageOps;
     public static boolean endermanDeathDrop;
@@ -158,7 +158,7 @@ public class Settings {
     public static Biome defaultBiome;
 
     // Island reset commands
-    public static List<String> resetCommands = new ArrayList<String>();
+    public static List<String> resetCommands = new ArrayList<>();
     // Mob limits
     public static int breedingLimit;
     
@@ -233,7 +233,7 @@ public class Settings {
     public static boolean teamChat;
     public static List<String> startCommands;
     public static boolean useWarpPanel;
-    public static List<EntityType> mobWhiteList = new ArrayList<EntityType>();
+    public static List<EntityType> mobWhiteList = new ArrayList<>();
     public static int villagerLimit;
     public static int hopperLimit;
     public static List<String> visitorCommandBlockList;
@@ -244,7 +244,7 @@ public class Settings {
     public static long backupDuration;
     public static boolean acidBottle;
     public static boolean useOwnGenerator;
-    public static List<String> freeLevels = new ArrayList<String>();
+    public static List<String> freeLevels = new ArrayList<>();
     public static int cleanRate;
     public static boolean allowPushing;
     public static boolean recoverSuperFlat;

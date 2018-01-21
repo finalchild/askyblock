@@ -50,7 +50,7 @@ public class NMSHandler implements NMSAbstraction {
     private static HashMap<EntityType, String> bToMConversion;
 
     static {
-        bToMConversion = new HashMap<EntityType, String> ();
+        bToMConversion = new HashMap<>();
         bToMConversion.put(EntityType.MUSHROOM_COW, "mooshroom");
         bToMConversion.put(EntityType.PIG_ZOMBIE, "zombie_pigman");
     }
@@ -90,7 +90,7 @@ public class NMSHandler implements NMSAbstraction {
             }
             //Bukkit.getLogger().info("Title: " + title);
             //bookMeta.setTitle(title);
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             if (contents.containsKey("display")) {
                 Map<String,Tag> display = (Map<String, Tag>) (contents.get("display")).getValue();
                 List<Tag> loreTag = ((ListTag)display.get("Lore")).getValue();
@@ -114,7 +114,7 @@ public class NMSHandler implements NMSAbstraction {
             }
             stack.setTag(tag); //Apply the tag to the item
             chestItem = CraftItemStack.asCraftMirror(stack); 
-            ItemMeta bookMeta = (ItemMeta) chestItem.getItemMeta();
+            ItemMeta bookMeta = chestItem.getItemMeta();
             bookMeta.setLore(lore);
             chestItem.setItemMeta(bookMeta);
         }
@@ -167,7 +167,7 @@ public class NMSHandler implements NMSAbstraction {
     @SuppressWarnings({ "unchecked"})
     @Override
     public ItemStack setPotion(Material material, Tag itemTags, ItemStack chestItem) {
-        Map<String,Tag> cont = (Map<String,Tag>) ((CompoundTag) itemTags).getValue();
+        Map<String,Tag> cont = ((CompoundTag) itemTags).getValue();
         if (cont != null) {
             if (((CompoundTag) itemTags).getValue().containsKey("tag")) {
                 Map<String,Tag> contents = (Map<String,Tag>)((CompoundTag) itemTags).getValue().get("tag").getValue();

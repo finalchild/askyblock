@@ -109,9 +109,9 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 public class IslandGuard implements Listener {
     private final ASkyBlock plugin;
     private final static boolean DEBUG = false;
-    private HashMap<UUID,Vector> onPlate = new HashMap<UUID,Vector>();
-    private Set<Location> tntBlocks = new HashSet<Location>();
-    private Set<UUID> litCreeper = new HashSet<UUID>();
+    private HashMap<UUID,Vector> onPlate = new HashMap<>();
+    private Set<Location> tntBlocks = new HashSet<>();
+    private Set<UUID> litCreeper = new HashSet<>();
 
     public IslandGuard(final ASkyBlock plugin) {
         this.plugin = plugin;
@@ -551,7 +551,7 @@ public class IslandGuard implements Listener {
                 e.blockList().clear();
             } else {
                 if (!Settings.allowChestDamage) {
-                    List<Block> toberemoved = new ArrayList<Block>();
+                    List<Block> toberemoved = new ArrayList<>();
                     // Save the chest blocks in a list
                     for (Block b : e.blockList()) {
                         switch (b.getType()) {
@@ -612,7 +612,7 @@ public class IslandGuard implements Listener {
                     }
                 }
                 if (!Settings.allowChestDamage) {
-                    List<Block> toberemoved = new ArrayList<Block>();
+                    List<Block> toberemoved = new ArrayList<>();
                     // Save the chest blocks in a list
                     for (Block b : e.blockList()) {
                         switch (b.getType()) {
@@ -640,7 +640,7 @@ public class IslandGuard implements Listener {
                 e.blockList().clear();
             } else {
                 if (!Settings.allowChestDamage) {
-                    List<Block> toberemoved = new ArrayList<Block>();
+                    List<Block> toberemoved = new ArrayList<>();
                     // Save the chest blocks in a list
                     for (Block b : e.blockList()) {
                         switch (b.getType()) {
@@ -904,7 +904,7 @@ public class IslandGuard implements Listener {
             return;
         }
         // Self damage
-        if (e.getEntity() instanceof Player && attacker.equals((Player)e.getEntity())) {
+        if (e.getEntity() instanceof Player && attacker.equals(e.getEntity())) {
             if (DEBUG) plugin.getLogger().info("Self damage!");
             return;
         }
@@ -1933,7 +1933,7 @@ public class IslandGuard implements Listener {
         if (DEBUG) {
             plugin.getLogger().info("Ender chest " + event.getEventName());
         }
-        Player player = (Player) event.getPlayer();
+        Player player = event.getPlayer();
         if (inWorld(player) || player.getWorld().equals(ASkyBlock.getNetherWorld())) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (event.getClickedBlock().getType() == Material.ENDER_CHEST) {
@@ -2283,7 +2283,7 @@ public class IslandGuard implements Listener {
                 }
                 break;
             case FLINT_AND_STEEL:
-                Set<Material> transparent = new HashSet<Material>();
+                Set<Material> transparent = new HashSet<>();
                 transparent.add(Material.AIR);
                 if (DEBUG) {
                     plugin.getLogger().info("DEBUG: block = " + e.getBlock());
@@ -2594,7 +2594,7 @@ public class IslandGuard implements Listener {
             return;
         }
         // Try to get the shooter
-        Projectile projectile = (Projectile) e.getEntity();
+        Projectile projectile = e.getEntity();
         if (DEBUG)
             plugin.getLogger().info("splash shooter = " + projectile.getShooter());
         if (projectile.getShooter() != null && projectile.getShooter() instanceof Player) {

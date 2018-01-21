@@ -55,7 +55,7 @@ public class WarpSigns implements Listener {
     private final ASkyBlock plugin;
     private final static boolean DEBUG = false;
     // Map of all warps stored as player, warp sign Location
-    private HashMap<UUID, Location> warpList = new HashMap<UUID, Location>();
+    private HashMap<UUID, Location> warpList = new HashMap<>();
     // Where warps are stored
     private YamlConfiguration welcomeWarps;
 
@@ -64,7 +64,7 @@ public class WarpSigns implements Listener {
      */
     public WarpSigns(ASkyBlock plugin) {
         this.plugin = plugin;
-        this.warpList = new HashMap<UUID, Location>();
+        this.warpList = new HashMap<>();
     }
 
     /**
@@ -206,7 +206,7 @@ public class WarpSigns implements Listener {
             return;
         }
         //plugin.getLogger().info("Saving warps...");
-        final HashMap<String, Object> warps = new HashMap<String, Object>();
+        final HashMap<String, Object> warps = new HashMap<>();
         for (UUID p : warpList.keySet()) {
             warps.put(p.toString(), Util.getStringLocation(warpList.get(p)));
         }
@@ -401,7 +401,7 @@ public class WarpSigns implements Listener {
      */
     public Collection<UUID> listSortedWarps() {
         // Bigger value of time means a more recent login
-        TreeMap<Long, UUID> map = new TreeMap<Long, UUID>();
+        TreeMap<Long, UUID> map = new TreeMap<>();
         Iterator<Entry<UUID, Location>> it = warpList.entrySet().iterator();
         while (it.hasNext()) {
             Entry<UUID, Location> en = it.next();

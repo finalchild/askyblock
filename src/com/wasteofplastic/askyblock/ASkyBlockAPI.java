@@ -197,7 +197,7 @@ public class ASkyBlockAPI {
      *         none.
      */
     public List<UUID> getTeamMembers(UUID playerUUID) {
-        return new ArrayList<UUID>(plugin.getPlayers().getMembers(playerUUID));
+        return new ArrayList<>(plugin.getPlayers().getMembers(playerUUID));
     }
 
     /**
@@ -274,7 +274,7 @@ public class ASkyBlockAPI {
      * @return String set of warps
      */
     public Set<UUID> listWarps() {
-        return new HashSet<UUID>(plugin.getWarpSignsListener().listWarps());
+        return new HashSet<>(plugin.getWarpSignsListener().listWarps());
     }
 
     /**
@@ -382,7 +382,7 @@ public class ASkyBlockAPI {
      * @return set of locations of islands or empty if none
      */
     public Set<Location> getCoopIslands(Player player) {
-        return new HashSet<Location>(CoopPlay.getInstance().getCoopIslands(player));
+        return new HashSet<>(CoopPlay.getInstance().getCoopIslands(player));
     }
 
     /**
@@ -442,7 +442,7 @@ public class ASkyBlockAPI {
      * @return Top ten list
      */
     public Map<UUID, Integer> getTopTen() {
-        HashMap<UUID, Integer> result = new HashMap<UUID, Integer>();
+        HashMap<UUID, Integer> result = new HashMap<>();
         for (Entry<UUID, Long> en : TopTen.getTopTenList().entrySet()) {
            result.put(en.getKey(), en.getValue().intValue()); 
         }
@@ -454,7 +454,7 @@ public class ASkyBlockAPI {
      * @return Top ten list
      */
     public Map<UUID, Long> getLongTopTen() {
-        return new HashMap<UUID, Long>(TopTen.getTopTenList());
+        return new HashMap<>(TopTen.getTopTenList());
     }
 
     /**
@@ -472,7 +472,7 @@ public class ASkyBlockAPI {
      * @return copy of Island object
      */
     public Island getIslandAt(Location location) {
-        return (Island)plugin.getGrid().getIslandAt(location);
+        return plugin.getGrid().getIslandAt(location);
     }
 
     /**
@@ -492,11 +492,11 @@ public class ASkyBlockAPI {
             HashMap<UUID, Island> islands = plugin.getGrid().getOwnedIslands();
             if (islands != null) {
                 //plugin.getLogger().info("DEBUG: getOwnedIslands is not null");
-                return new HashMap<UUID, Island>(islands);
+                return new HashMap<>(islands);
             }
             //plugin.getLogger().info("DEBUG: getOwnedIslands is null");
         }
-        return new HashMap<UUID, Island>();
+        return new HashMap<>();
 
     }
 

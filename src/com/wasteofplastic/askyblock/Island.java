@@ -93,12 +93,12 @@ public class Island implements Cloneable {
         VILLAGER_TRADING, CHORUS_FRUIT, ENTER_EXIT_MESSAGES, MONSTER_SPAWN;
     }
     // Island protection settings
-    private static List<String> islandSettingsKey = new ArrayList<String>();
+    private static List<String> islandSettingsKey = new ArrayList<>();
     static {
         islandSettingsKey.clear();
         islandSettingsKey.add("");
     }
-    private HashMap<SettingsFlag, Boolean> igs = new HashMap<SettingsFlag, Boolean>();
+    private HashMap<SettingsFlag, Boolean> igs = new HashMap<>();
     private int levelHandicap;
     /**
      * Island Guard Setting flags
@@ -756,7 +756,7 @@ public class Island implements Cloneable {
      * @return Serialized set of settings
      */
     public String getSettings() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         // Personal island protection settings - serialize enum into 1's and 0's representing the boolean values
         //plugin.getLogger().info("DEBUG: igs = " + igs.toString());
         try {
@@ -764,17 +764,17 @@ public class Island implements Cloneable {
                 //plugin.getLogger().info("DEBUG: flag f = " + f);
                 if (this.igs.containsKey(f)) {
                     //plugin.getLogger().info("DEBUG: contains key");
-                    result += this.igs.get(f) ? "1" : "0";
+                    result.append(this.igs.get(f) ? "1" : "0");
                 } else {
                     //plugin.getLogger().info("DEBUG: does not contain key");
-                    result += "0";
+                    result.append("0");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            result = "";
+            result = new StringBuilder();
         }
-        return result;
+        return result.toString();
     }
 
     /**
@@ -806,7 +806,7 @@ public class Island implements Cloneable {
      * @return a list of UUIDs that have legitimate access to the island
      */
     public List<UUID> getMembers() {
-        List<UUID> result = new ArrayList<UUID>();
+        List<UUID> result = new ArrayList<>();
         // Add any coop members for this island
         result.addAll(CoopPlay.getInstance().getCoopPlayers(center.toVector().toLocation(ASkyBlock.getIslandWorld())));
         if (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null) {

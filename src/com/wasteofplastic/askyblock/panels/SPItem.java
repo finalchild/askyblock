@@ -35,7 +35,7 @@ import com.wasteofplastic.askyblock.util.Util;
  */
 public class SPItem {
     private ItemStack item;
-    private List<String> description = new ArrayList<String>();
+    private List<String> description = new ArrayList<>();
     private String heading;
     private String name;
     private String perm;
@@ -80,7 +80,7 @@ public class SPItem {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         // This neat bit of code makes a list out of the description split by new line character
-        List<String> desc = new ArrayList<String>(Arrays.asList(schematic.getDescription().split("\\|")));
+        List<String> desc = new ArrayList<>(Arrays.asList(schematic.getDescription().split("\\|")));
         this.description.addAll(desc);
         meta.setLore(this.description);
         item.setItemMeta(meta);

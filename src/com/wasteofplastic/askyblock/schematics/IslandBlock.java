@@ -62,9 +62,9 @@ public class IslandBlock {
     private PotBlock pot;
     private EntityType spawnerBlockType;
     // Chest contents
-    private HashMap<Byte,ItemStack> chestContents = new HashMap<Byte,ItemStack>();
-    public static final HashMap<String, Material> WEtoM = new HashMap<String, Material>();
-    public static final HashMap<String, EntityType> WEtoME = new HashMap<String, EntityType>();
+    private HashMap<Byte,ItemStack> chestContents = new HashMap<>();
+    public static final HashMap<String, Material> WEtoM = new HashMap<>();
+    public static final HashMap<String, EntityType> WEtoME = new HashMap<>();
 
     static {
         // Establish the World Edit to Material look up
@@ -224,7 +224,7 @@ public class IslandBlock {
         skull = null;
         pot = null;
         spawnerBlockType = null;
-        chestContents = new HashMap<Byte,ItemStack>();
+        chestContents = new HashMap<>();
     }
     /**
      * @return the type
@@ -334,8 +334,8 @@ public class IslandBlock {
      * @param tileData
      */
     public void setSign(Map<String, Tag> tileData) {
-        signText = new ArrayList<String>();
-        List<String> text = new ArrayList<String>();
+        signText = new ArrayList<>();
+        List<String> text = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             String line = ((StringTag) tileData.get("Text" + String.valueOf(i))).getValue();
             // This value can actually be a string that says null sometimes.
@@ -359,7 +359,7 @@ public class IslandBlock {
         };
         // This just removes all the JSON formatting and provides the raw text
         for (int line = 0; line < 4; line++) {
-            String lineText = "";
+            StringBuilder lineText = new StringBuilder();
             if (!text.get(line).equals("\"\"") && !text.get(line).isEmpty()) {
                 //String lineText = text.get(line).replace("{\"extra\":[\"", "").replace("\"],\"text\":\"\"}", "");
                 //Bukkit.getLogger().info("DEBUG: sign text = '" + text.get(line) + "'");
@@ -371,61 +371,58 @@ public class IslandBlock {
                         List list = (List) json.get("extra");
                         //System.out.println("DEBUG1:" + JSONValue.toJSONString(list));
                         if (list != null) {
-                            Iterator iter = list.iterator();
-                            while(iter.hasNext()){
-                                Object next = iter.next();
+                            for (Object next : list) {
                                 String format = JSONValue.toJSONString(next);
                                 //System.out.println("DEBUG2:" + format);
                                 // This doesn't see right, but appears to be the easiest way to identify this string as JSON...
                                 if (format.startsWith("{")) {
                                     // JSON string
-                                    Map jsonFormat = (Map)parser.parse(format, containerFactory);
-                                    Iterator formatIter = jsonFormat.entrySet().iterator();
-                                    while (formatIter.hasNext()) {
-                                        Map.Entry entry = (Map.Entry)formatIter.next();
+                                    Map jsonFormat = (Map) parser.parse(format, containerFactory);
+                                    for (Object o : jsonFormat.entrySet()) {
+                                        Entry entry = (Entry) o;
                                         //System.out.println("DEBUG3:" + entry.getKey() + "=>" + entry.getValue());
                                         String key = entry.getKey().toString();
                                         String value = entry.getValue().toString();
                                         if (key.equalsIgnoreCase("color")) {
                                             try {
-                                                lineText += ChatColor.valueOf(value.toUpperCase());
+                                                lineText.append(ChatColor.valueOf(value.toUpperCase()));
                                             } catch (Exception noColor) {
-                                                Bukkit.getLogger().warning("Unknown color " + value +" in sign when pasting schematic, skipping...");
+                                                Bukkit.getLogger().warning("Unknown color " + value + " in sign when pasting schematic, skipping...");
                                             }
                                         } else if (key.equalsIgnoreCase("text")) {
-                                            lineText += value;
+                                            lineText.append(value);
                                         } else {
                                             // Formatting - usually the value is always true, but check just in case
                                             if (key.equalsIgnoreCase("obfuscated") && value.equalsIgnoreCase("true")) {
-                                                lineText += ChatColor.MAGIC;
+                                                lineText.append(ChatColor.MAGIC);
                                             } else if (key.equalsIgnoreCase("underlined") && value.equalsIgnoreCase("true")) {
-                                                lineText += ChatColor.UNDERLINE;
+                                                lineText.append(ChatColor.UNDERLINE);
                                             } else {
                                                 // The rest of the formats
                                                 try {
-                                                    lineText += ChatColor.valueOf(key.toUpperCase());
+                                                    lineText.append(ChatColor.valueOf(key.toUpperCase()));
                                                 } catch (Exception noFormat) {
                                                     // Ignore
                                                     //System.out.println("DEBUG3:" + key + "=>" + value);
-                                                    Bukkit.getLogger().warning("Unknown format " + value +" in sign when pasting schematic, skipping...");
+                                                    Bukkit.getLogger().warning("Unknown format " + value + " in sign when pasting schematic, skipping...");
                                                 }
                                             }
-                                        }   
+                                        }
                                     }
                                 } else {
                                     // This is unformatted text. It is included in "". A reset is required to clear
                                     // any previous formatting
-                                    if (format.length()>1) {
-                                        lineText += ChatColor.RESET + format.substring(format.indexOf('"')+1,format.lastIndexOf('"'));
+                                    if (format.length() > 1) {
+                                        lineText.append(ChatColor.RESET).append(format.substring(format.indexOf('"') + 1, format.lastIndexOf('"')));
                                     }
-                                } 
+                                }
                             }
                         } else {
                             // No extra tag
                             json = (Map)parser.parse(text.get(line), containerFactory);
                             String value = (String) json.get("text");
                             //System.out.println("DEBUG text only?:" + value);
-                            lineText += value;
+                            lineText.append(value);
                         }
                     } catch (ParseException e) {
                         // TODO Auto-generated catch block
@@ -435,19 +432,19 @@ public class IslandBlock {
                     // This is unformatted text (not JSON). It is included in "".
                     if (text.get(line).length() > 1) {
                         try {
-                            lineText = text.get(line).substring(text.get(line).indexOf('"')+1,text.get(line).lastIndexOf('"'));
+                            lineText = new StringBuilder(text.get(line).substring(text.get(line).indexOf('"') + 1, text.get(line).lastIndexOf('"')));
                         } catch (Exception e) {
                             //There may not be those "'s, so just use the raw line
-                            lineText = text.get(line);
+                            lineText = new StringBuilder(text.get(line));
                         }
                     } else {
                         // just in case it isn't - show the raw line
-                        lineText = text.get(line);
+                        lineText = new StringBuilder(text.get(line));
                     }
                 }
                 //Bukkit.getLogger().info("Line " + line + " is " + lineText);
             }
-            signText.add(lineText);
+            signText.add(lineText.toString());
         }
     }
 

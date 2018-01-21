@@ -48,7 +48,7 @@ public class CoopPlay {
     private static CoopPlay instance = new CoopPlay(ASkyBlock.getPlugin());
     // Stores all the coop islands, the coop player, the location and the
     // inviter
-    private HashMap<UUID, HashMap<Location, UUID>> coopPlayers = new HashMap<UUID, HashMap<Location, UUID>>();
+    private HashMap<UUID, HashMap<Location, UUID>> coopPlayers = new HashMap<>();
     // Defines whether a player is on a coop island or not
     // private HashMap<UUID, Location> onCoopIsland = new HashMap<UUID,
     // Location>();
@@ -120,7 +120,7 @@ public class CoopPlay {
             coopPlayers.get(newPlayer.getUniqueId()).put(coopIsland.getCenter(), requester.getUniqueId());
         } else {
             // First time. Create the hashmap
-            HashMap<Location, UUID> loc = new HashMap<Location, UUID>();
+            HashMap<Location, UUID> loc = new HashMap<>();
             loc.put(coopIsland.getCenter(), requester.getUniqueId());
             coopPlayers.put(newPlayer.getUniqueId(), loc);
         }
@@ -148,7 +148,7 @@ public class CoopPlay {
         if (coopPlayers.containsKey(player.getUniqueId())) {
             return coopPlayers.get(player.getUniqueId()).keySet();
         }
-        return new HashSet<Location>();
+        return new HashSet<>();
     }
 
     /**
@@ -159,7 +159,7 @@ public class CoopPlay {
      */
     public List<UUID> getCoopPlayers(Location islandLoc) {
         Island coopIsland = plugin.getGrid().getIslandAt(islandLoc);
-        List<UUID> result = new ArrayList<UUID>();
+        List<UUID> result = new ArrayList<>();
         if (coopIsland != null) {
             for (UUID player : coopPlayers.keySet()) {
                 if (coopPlayers.get(player).containsKey(coopIsland.getCenter())) {
@@ -262,7 +262,7 @@ public class CoopPlay {
      * @return List of island location | uuid of invitee
      */
     private List<String> getMyCoops(UUID playerUUID) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if (coopPlayers.containsKey(playerUUID)) {
             for (Entry<Location, UUID> entry : coopPlayers.get(playerUUID).entrySet()) {
                 result.add(Util.getStringLocation(entry.getKey()) + "|" + entry.getValue().toString());
@@ -278,7 +278,7 @@ public class CoopPlay {
      */
     private void setMyCoops(UUID playerUUID, List<String> coops) {
         try {
-            HashMap<Location, UUID> temp = new HashMap<Location, UUID>();
+            HashMap<Location, UUID> temp = new HashMap<>();
             for (String coop : coops) {
                 String[] split = coop.split("\\|");
                 if (split.length == 2) {

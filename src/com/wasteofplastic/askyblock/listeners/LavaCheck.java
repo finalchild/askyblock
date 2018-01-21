@@ -52,8 +52,8 @@ public class LavaCheck implements Listener {
     private final ASkyBlock plugin;
     private final static boolean DEBUG = false;
     private final static List<BlockFace> FACES = Arrays.asList(BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
-    private static Map<Long, Multiset<Material>> stats = new HashMap<Long, Multiset<Material>>();
-    private static Map<Long, Map<Material, Double>> configChances = new HashMap<Long, Map<Material, Double>>();
+    private static Map<Long, Multiset<Material>> stats = new HashMap<>();
+    private static Map<Long, Map<Material, Double>> configChances = new HashMap<>();
 
     public LavaCheck(ASkyBlock aSkyBlock) {
         plugin = aSkyBlock;
@@ -158,8 +158,8 @@ public class LavaCheck implements Listener {
                 final long level = l;
                 // Check if cobble was generated next tick
                 // Store surrounding blocks and their current material types
-                final List<Block> prevBlock = new ArrayList<Block>();
-                final List<Material> prevMat = new ArrayList<Material>();
+                final List<Block> prevBlock = new ArrayList<>();
+                final List<Material> prevMat = new ArrayList<>();
                 for (BlockFace face: FACES) {
                     Block r = toBlock.getRelative(face);
                     prevBlock.add(r);

@@ -113,9 +113,9 @@ public class MiniShopItem {
             // Set the description and price
             ItemMeta meta = item.getItemMeta();
             // Split up the description
-            List<String> desc = new ArrayList<String>(Arrays.asList(description.split("\\|")));
+            List<String> desc = new ArrayList<>(Arrays.asList(description.split("\\|")));
             meta.setDisplayName(desc.get(0));
-            ArrayList<String> buyAndSell = new ArrayList<String>();
+            ArrayList<String> buyAndSell = new ArrayList<>();
             if (material.equals(Material.MOB_SPAWNER) && !extra.isEmpty()) {
                 //Bukkit.getLogger().info("DEBUG: mob spawner and extra is " + extra);
                 // Get the entity type
@@ -175,7 +175,7 @@ public class MiniShopItem {
         ItemStack temp = this.item.clone();
         ItemMeta meta = temp.getItemMeta();
         meta.setDisplayName(null);
-        List<String> lore = new ArrayList<String>(1);
+        List<String> lore = new ArrayList<>(1);
         if (item.getType().equals(Material.MOB_SPAWNER)) {  
             lore.add(Util.prettifyText(entityType.name()));
         }
@@ -441,9 +441,9 @@ public class MiniShopItem {
                     return prefix + "STINKY_POTION" + suffix;
                 }
             } else {
-                String effects = "";
+                StringBuilder effects = new StringBuilder();
                 for (PotionEffect effect : pot.getEffects()) {
-                    effects += effect.toString().split(":")[0];
+                    effects.append(effect.toString().split(":")[0]);
                 }
                 return prefix + effects + suffix;
             }

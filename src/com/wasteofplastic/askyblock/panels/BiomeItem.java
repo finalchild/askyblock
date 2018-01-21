@@ -58,11 +58,11 @@ public class BiomeItem {
         // Set the description and price
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE + name);
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
         if (description.contains("|") || description.length() <= 20) {
             // Split pip character requires escaping it
             String[] split = description.split("\\|");
-            lore = new ArrayList<String>(Arrays.asList(split));
+            lore = new ArrayList<>(Arrays.asList(split));
         } else {
             lore = Util.chop(ChatColor.YELLOW, description, 20);
         }

@@ -69,7 +69,7 @@ public class SetBiome {
         case HELL:
             // Get the chunks
             //plugin.getLogger().info("DEBUG: get the chunks");
-            List<ChunkSnapshot> chunkSnapshot = new ArrayList<ChunkSnapshot>();
+            List<ChunkSnapshot> chunkSnapshot = new ArrayList<>();
             for (int x = island.getMinProtectedX() /16; x <= (island.getMinProtectedX() + island.getProtectionSize() - 1)/16; x++) {
                 for (int z = island.getMinProtectedZ() /16; z <= (island.getMinProtectedZ() + island.getProtectionSize() - 1)/16; z++) {
                     boolean loaded = world.getChunkAt(x, z).isLoaded();
@@ -87,7 +87,7 @@ public class SetBiome {
                 @Override
                 public void run() {
                     //System.out.println("DEBUG: running async task");
-                    HashMap<Vector,Integer> blocksToRemove = new HashMap<Vector, Integer>();
+                    HashMap<Vector,Integer> blocksToRemove = new HashMap<>();
                     // Go through island space and find the offending columns
                     for (ChunkSnapshot chunk: finalChunk) {
                         for (int x = 0; x< 16; x++) {

@@ -34,7 +34,7 @@ public class MapUtil {
      * @return 
      */
     public static <Key, Value extends Comparable<? super Value>> LinkedHashMap<Key, Value> sortByValue(Map<Key, Value> map) {
-        List<Map.Entry<Key, Value>> list = new LinkedList<Map.Entry<Key, Value>>(map.entrySet());
+        List<Map.Entry<Key, Value>> list = new LinkedList<>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<Key, Value>>() {
             public int compare(Map.Entry<Key, Value> o1, Map.Entry<Key, Value> o2) {
                 // Switch these two if you want ascending
@@ -42,7 +42,7 @@ public class MapUtil {
             }
         });
 
-        LinkedHashMap<Key, Value> result = new LinkedHashMap<Key, Value>();
+        LinkedHashMap<Key, Value> result = new LinkedHashMap<>();
         for (Map.Entry<Key, Value> entry : list) {
             result.put(entry.getKey(), entry.getValue());
             if (result.size() > 20)

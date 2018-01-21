@@ -233,13 +233,13 @@ public class PluginConfig {
         String companion = plugin.getConfig().getString("island.companion", "COW").toUpperCase();
         Settings.islandCompanion = null;
         if (!companion.equalsIgnoreCase("NOTHING")) {
-            String commaList = "NOTHING, ";
+            StringBuilder commaList = new StringBuilder("NOTHING, ");
             for (EntityType type : EntityType.values()) {
                 if (companion.equalsIgnoreCase(type.toString())) {
                     Settings.islandCompanion = type;
                     break;
                 }
-                commaList += ", " + type.toString();
+                commaList.append(", ").append(type.toString());
             }
             if (Settings.islandCompanion == null) {
                 plugin.getLogger().warning("Island companion is not recognized. Pick from " + commaList);
@@ -247,7 +247,7 @@ public class PluginConfig {
         }
         // Companion names
         List<String> companionNames = plugin.getConfig().getStringList("island.companionnames");
-        Settings.companionNames = new ArrayList<String>();
+        Settings.companionNames = new ArrayList<>();
         for (String name : companionNames) {
             Settings.companionNames.add(ChatColor.translateAlternateColorCodes('&', name));
         }
@@ -321,7 +321,7 @@ public class PluginConfig {
         Settings.defaultLanguage = plugin.getConfig().getString("general.defaultlanguage", "en-US");
 
         // Load languages
-        HashMap<String,ASLocale> availableLocales = new HashMap<String,ASLocale>();
+        HashMap<String,ASLocale> availableLocales = new HashMap<>();
         FileLister fl = new FileLister(plugin);
         try {
             int index = 1;
@@ -391,7 +391,7 @@ public class PluginConfig {
         // Invincible visitors
         Settings.invincibleVisitors = plugin.getConfig().getBoolean("general.invinciblevisitors", false);
         if(Settings.invincibleVisitors){
-            Settings.visitorDamagePrevention = new HashSet<DamageCause>();
+            Settings.visitorDamagePrevention = new HashSet<>();
             List<String> damageSettings = plugin.getConfig().getStringList("general.invinciblevisitorsoptions");
             for (DamageCause cause: DamageCause.values()) {
                 if (damageSettings.contains(cause.toString())) {
@@ -521,8 +521,8 @@ public class PluginConfig {
 
         Settings.villagerLimit = plugin.getConfig().getInt("general.villagerlimit", 0);
 
-        Settings.limitedBlocks = new HashMap<String,Integer>();
-        Settings.entityLimits = new HashMap<EntityType, Integer>();
+        Settings.limitedBlocks = new HashMap<>();
+        Settings.entityLimits = new HashMap<>();
         plugin.getLogger().info("Loading entity limits");
         ConfigurationSection entityLimits = plugin.getConfig().getConfigurationSection("general.entitylimits");
         if (entityLimits != null) {
@@ -696,7 +696,7 @@ public class PluginConfig {
                 //plugin.getLogger().info("DEBUG: magic cobble gen enabled and chances section found");
                 // Clear the cobble gen chances so they can be reloaded
                 LavaCheck.clearChances();
-                Settings.magicCobbleGenChances = new TreeMap<Long, TreeMap<Double,Material>>();
+                Settings.magicCobbleGenChances = new TreeMap<>();
                 for(String level : plugin.getConfig().getConfigurationSection("general.magiccobblegenchances").getKeys(false)){
                     long levelLong = 0;
                     try{
@@ -705,7 +705,7 @@ public class PluginConfig {
                         } else {
                             levelLong = Long.parseLong(level);
                         } 
-                        TreeMap<Double,Material> blockMapTree = new TreeMap<Double, Material>();
+                        TreeMap<Double,Material> blockMapTree = new TreeMap<>();
                         double chanceTotal = 0;
                         for(String block : plugin.getConfig().getConfigurationSection("general.magiccobblegenchances." + level).getKeys(false)){
                             double chance = plugin.getConfig().getDouble("general.magiccobblegenchances." + level + "." + block, 0D);
@@ -719,7 +719,7 @@ public class PluginConfig {
                             Settings.magicCobbleGenChances.put(levelLong, blockMapTree);
                         }
                         // Store the requested values as a % chance
-                        Map<Material, Double> chances = new HashMap<Material, Double>();
+                        Map<Material, Double> chances = new HashMap<>();
                         for (Entry<Double, Material> en : blockMapTree.entrySet()) {
                             double chance = plugin.getConfig().getDouble("general.magiccobblegenchances." + level + "." + en.getValue(), 0D);
                             chances.put(en.getValue(), (chance/chanceTotal) * 100);
@@ -868,7 +868,7 @@ public class PluginConfig {
             Settings.levelCost = 1;
             plugin.getLogger().warning("levelcost in blockvalues.yml cannot be less than 1. Setting to 1.");
         }
-        Settings.blockLimits = new HashMap<MaterialData, Integer>();
+        Settings.blockLimits = new HashMap<>();
         if (blockValuesConfig.isSet("limits")) {
             for (String material : blockValuesConfig.getConfigurationSection("limits").getKeys(false)) {
                 try {
@@ -894,7 +894,7 @@ public class PluginConfig {
                 }
             }
         }
-        Settings.blockValues = new HashMap<MaterialData, Integer>();
+        Settings.blockValues = new HashMap<>();
         if (blockValuesConfig.isSet("blocks")) {
             for (String material : blockValuesConfig.getConfigurationSection("blocks").getKeys(false)) {
                 try {

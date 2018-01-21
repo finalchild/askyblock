@@ -37,7 +37,7 @@ import com.wasteofplastic.askyblock.util.Util;
  */
 public class IPItem {
     private ItemStack item;
-    private List<String> description = new ArrayList<String>();
+    private List<String> description = new ArrayList<>();
     private String name;
     private int slot;
     private boolean flagValue;

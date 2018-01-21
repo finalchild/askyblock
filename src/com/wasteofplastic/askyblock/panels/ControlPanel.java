@@ -50,7 +50,7 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 public class ControlPanel implements Listener {
 
     private static YamlConfiguration miniShopFile;
-    private static HashMap<Integer, MiniShopItem> store = new HashMap<Integer, MiniShopItem>();
+    private static HashMap<Integer, MiniShopItem> store = new HashMap<>();
     private static YamlConfiguration cpFile;
     private ASkyBlock plugin;
     private static boolean allowSelling;
@@ -71,14 +71,14 @@ public class ControlPanel implements Listener {
     /**
      * Map of panel contents by name
      */
-    private static HashMap<String, HashMap<Integer, CPItem>> panels = new HashMap<String, HashMap<Integer, CPItem>>();
+    private static HashMap<String, HashMap<Integer, CPItem>> panels = new HashMap<>();
     // public static final Inventory challenges = Bukkit.createInventory(null,
     // 9, ChatColor.YELLOW + "Challenges");
 
     /**
      * Map of CP inventories by name
      */
-    public static HashMap<String, Inventory> controlPanel = new HashMap<String, Inventory>();
+    public static HashMap<String, Inventory> controlPanel = new HashMap<>();
 
     public static Inventory miniShop;
 
@@ -158,7 +158,7 @@ public class ControlPanel implements Listener {
             ConfigurationSection panelConf = cpFile.getConfigurationSection(panel);
             if (panelConf != null) {
                 // New panel map
-                HashMap<Integer, CPItem> cp = new HashMap<Integer, CPItem>();
+                HashMap<Integer, CPItem> cp = new HashMap<>();
                 String panelName = ChatColor.translateAlternateColorCodes('&', panelConf.getString("panelname", "Commands"));
                 if (panel.equalsIgnoreCase("default")) {
                     defaultPanelName = panelName;

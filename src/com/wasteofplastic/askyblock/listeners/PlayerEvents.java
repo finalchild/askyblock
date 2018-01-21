@@ -67,13 +67,13 @@ public class PlayerEvents implements Listener {
     private final ASkyBlock plugin;
     private static final boolean DEBUG = false;
     // A set of falling players
-    private static HashSet<UUID> fallingPlayers = new HashSet<UUID>();
-    private static HashMap<UUID, List<String>> temporaryPerms = new HashMap<UUID, List<String>>();
+    private static HashSet<UUID> fallingPlayers = new HashSet<>();
+    private static HashMap<UUID, List<String>> temporaryPerms = new HashMap<>();
     private List<UUID> respawn;
 
     public PlayerEvents(final ASkyBlock plugin) {
         this.plugin = plugin;
-        respawn = new ArrayList<UUID>();
+        respawn = new ArrayList<>();
     }
 
     /**
@@ -125,7 +125,7 @@ public class PlayerEvents implements Listener {
                         if (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null) {
                             VaultHelper.addPerm(player, perm, ASkyBlock.getNetherWorld());
                         }
-                        List<String> perms = new ArrayList<String>();
+                        List<String> perms = new ArrayList<>();
                         if(temporaryPerms.containsKey(player.getUniqueId())) perms = temporaryPerms.get(player.getUniqueId());
                         perms.add(perm);
                         temporaryPerms.put(player.getUniqueId(), perms);
@@ -208,7 +208,7 @@ public class PlayerEvents implements Listener {
                     if (Settings.createNether && Settings.newNether && ASkyBlock.getNetherWorld() != null) {
                         VaultHelper.addPerm(player, perm, ASkyBlock.getNetherWorld());
                     }
-                    List<String> perms = new ArrayList<String>();
+                    List<String> perms = new ArrayList<>();
                     if(temporaryPerms.containsKey(player.getUniqueId())) perms = temporaryPerms.get(player.getUniqueId());
                     perms.add(perm);
                     temporaryPerms.put(player.getUniqueId(), perms);
