@@ -48,9 +48,9 @@ import com.wasteofplastic.askyblock.nms.NMSAbstraction;
 
 /**
  * A set of utility methods
- * 
+ *
  * @author tastybento
- * 
+ *
  */
 public class Util {
     private static ASkyBlock plugin = ASkyBlock.getPlugin();
@@ -58,7 +58,7 @@ public class Util {
 
     /**
      * Loads a YAML file and if it does not exist it is looked for in the JAR
-     * 
+     *
      * @param file
      * @return
      */
@@ -98,7 +98,7 @@ public class Util {
 
     /**
      * Saves a YAML file
-     * 
+     *
      * @param yamlFile
      * @param fileLocation
      */
@@ -116,7 +116,7 @@ public class Util {
     /**
      * Cuts up a string into multiple lines with the same color code at the
      * start of each line
-     * 
+     *
      * @param color
      * @param longLine
      * @param length
@@ -164,56 +164,56 @@ public class Util {
     /**
      * Converts block face direction to radial degrees. Returns 0 if block face
      * is not radial.
-     * 
+     *
      * @param face
      * @return degrees
      */
     public static float blockFaceToFloat(BlockFace face) {
         switch (face) {
-        case EAST:
-            return 90F;
-        case EAST_NORTH_EAST:
-            return 67.5F;
-        case EAST_SOUTH_EAST:
-            return 0F;
-        case NORTH:
-            return 0F;
-        case NORTH_EAST:
-            return 45F;
-        case NORTH_NORTH_EAST:
-            return 22.5F;
-        case NORTH_NORTH_WEST:
-            return 337.5F;
-        case NORTH_WEST:
-            return 315F;
-        case SOUTH:
-            return 180F;
-        case SOUTH_EAST:
-            return 135F;
-        case SOUTH_SOUTH_EAST:
-            return 157.5F;
-        case SOUTH_SOUTH_WEST:
-            return 202.5F;
-        case SOUTH_WEST:
-            return 225F;
-        case WEST:
-            return 270F;
-        case WEST_NORTH_WEST:
-            return 292.5F;
-        case WEST_SOUTH_WEST:
-            return 247.5F;
-        default:
-            return 0F;
+            case EAST:
+                return 90F;
+            case EAST_NORTH_EAST:
+                return 67.5F;
+            case EAST_SOUTH_EAST:
+                return 0F;
+            case NORTH:
+                return 0F;
+            case NORTH_EAST:
+                return 45F;
+            case NORTH_NORTH_EAST:
+                return 22.5F;
+            case NORTH_NORTH_WEST:
+                return 337.5F;
+            case NORTH_WEST:
+                return 315F;
+            case SOUTH:
+                return 180F;
+            case SOUTH_EAST:
+                return 135F;
+            case SOUTH_SOUTH_EAST:
+                return 157.5F;
+            case SOUTH_SOUTH_WEST:
+                return 202.5F;
+            case SOUTH_WEST:
+                return 225F;
+            case WEST:
+                return 270F;
+            case WEST_NORTH_WEST:
+                return 292.5F;
+            case WEST_SOUTH_WEST:
+                return 247.5F;
+            default:
+                return 0F;
         }
     }
 
     /**
      * Converts a name like IRON_INGOT into Iron Ingot to improve readability
-     * 
+     *
      * @param ugly
      *            The string such as IRON_INGOT
      * @return A nicer version, such as Iron Ingot
-     * 
+     *
      *         Credits to mikenon on GitHub!
      */
     public static String prettifyText(String ugly) {
@@ -239,7 +239,7 @@ public class Util {
     /**
      * Converts a serialized location to a Location. Returns null if string is
      * empty
-     * 
+     *
      * @param s
      *            - serialized location in format "world:x:y:z"
      * @return Location
@@ -276,7 +276,7 @@ public class Util {
     /**
      * Converts a location to a simple string representation
      * If location is null, returns empty string
-     * 
+     *
      * @param location
      * @return String of location
      */
@@ -290,7 +290,7 @@ public class Util {
     /**
      * Returns all of the items that begin with the given start, 
      * ignoring case.  Intended for tabcompletion. 
-     * 
+     *
      * @param list
      * @param start
      * @return List of items that start with the letters
@@ -310,7 +310,7 @@ public class Util {
 
     /**
      * Gets a list of all players who are currently online.
-     * 
+     *
      * @return list of online players
      */
     public static List<String> getOnlinePlayerList() {
@@ -329,8 +329,8 @@ public class Util {
      * @throws NoSuchMethodException
      */
     public static NMSAbstraction checkVersion() throws ClassNotFoundException, IllegalArgumentException,
-    SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException,
-    NoSuchMethodException {
+            SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
         String serverPackageName = Bukkit.getServer().getClass().getPackage().getName();
         String pluginPackageName = ASkyBlock.getPlugin().getClass().getPackage().getName();
         String version = serverPackageName.substring(serverPackageName.lastIndexOf('.') + 1);
@@ -466,7 +466,7 @@ public class Util {
             if (player == null) {
                 returned.add(p.getName());
             } else if (player.canSee(p)) {
-                returned.add(p.getName()); 
+                returned.add(p.getName());
             }
         }
         return returned;

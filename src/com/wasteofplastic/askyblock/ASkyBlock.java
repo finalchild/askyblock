@@ -47,7 +47,6 @@ import com.wasteofplastic.askyblock.commands.IslandCmd;
 import com.wasteofplastic.askyblock.events.IslandDeleteEvent;
 import com.wasteofplastic.askyblock.events.ReadyEvent;
 import com.wasteofplastic.askyblock.generators.ChunkGeneratorWorld;
-import com.wasteofplastic.askyblock.listeners.AcidEffect;
 import com.wasteofplastic.askyblock.listeners.ChatListener;
 import com.wasteofplastic.askyblock.listeners.CleanSuperFlat;
 import com.wasteofplastic.askyblock.listeners.EntityLimits;
@@ -124,9 +123,6 @@ public class ASkyBlock extends JavaPlugin {
 
     // Settings panel object
     private SettingsPanel settingsPanel;
-
-    // Acid Item Removal Task
-    AcidTask acidTask;
 
     // Player events listener
     private PlayerEvents playerEvents;
@@ -471,60 +467,6 @@ public class ASkyBlock extends JavaPlugin {
                     // Fire event
                     getServer().getPluginManager().callEvent(new ReadyEvent());
                 });
-                // Check for updates asynchronously
-                if (Settings.updateCheck) {
-                    checkUpdates();
-                    new BukkitRunnable() {
-                        int count = 0;
-                        @Override
-                        public void run() {
-                            if (count++ > 20) {
-                                ASkyBlock.this.getLogger().info("No updates found. (No response from server after 20s)");
-                                this.cancel();
-                            } else {
-                                // Wait for the response
-                                if (updateCheck != null) {
-                                    switch (updateCheck.getResult()) {
-                                    case DISABLED:
-                                        ASkyBlock.this.getLogger().info("Updating has been disabled");
-                                        break;
-                                    case FAIL_APIKEY:
-                                        ASkyBlock.this.getLogger().info("API key failed");
-                                        break;
-                                    case FAIL_BADID:
-                                        ASkyBlock.this.getLogger().info("Bad ID");
-                                        break;
-                                    case FAIL_DBO:
-                                        ASkyBlock.this.getLogger().info("Could not connect to updating service");
-                                        break;
-                                    case FAIL_DOWNLOAD:
-                                        ASkyBlock.this.getLogger().info("Downloading failed");
-                                        break;
-                                    case FAIL_NOVERSION:
-                                        ASkyBlock.this.getLogger().info("Could not recognize version");
-                                        break;
-                                    case NO_UPDATE:
-                                        ASkyBlock.this.getLogger().info("No update available.");
-                                        break;
-                                    case SUCCESS:
-                                        ASkyBlock.this.getLogger().info("Success!");
-                                        break;
-                                    case UPDATE_AVAILABLE:
-                                        ASkyBlock.this.getLogger().info("Update available " + updateCheck.getLatestName());
-                                        break;
-                                    default:
-                                        break;
-
-                                    }
-                                    this.cancel();
-                                }
-                            }
-                        }
-                    }.runTaskTimer(ASkyBlock.this, 0L, 20L); // Check status every second
-                }
-
-                // Run acid tasks
-                acidTask = new AcidTask(ASkyBlock.this);
 
             }
         });
@@ -703,19 +645,11 @@ public class ASkyBlock extends JavaPlugin {
         // Ensures Lava flows correctly in ASkyBlock world
         lavaListener = new LavaCheck(this);
         manager.registerEvents(lavaListener, this);
-        // Ensures that water is acid
-        manager.registerEvents(new AcidEffect(this), this);
-        // Ensures that boats are safe in ASkyBlock
-        if (Settings.acidDamage > 0D) {
-            manager.registerEvents(new SafeBoat(this), this);
-        }
         // Enables warp signs in ASkyBlock
         warpSignsListener = new WarpSigns(this);
         manager.registerEvents(warpSignsListener, this);
         // Control panel - for future use
         // manager.registerEvents(new ControlPanel(), this);
-        // Change names of inventory items
-        //manager.registerEvents(new AcidInventory(this), this);
         // Schematics panel
         schematicsPanel = new SchematicsPanel(this);
         manager.registerEvents(schematicsPanel, this);
@@ -923,13 +857,6 @@ public class ASkyBlock extends JavaPlugin {
      */
     public void setAvailableLocales(HashMap<String, ASLocale> availableLocales) {
         this.availableLocales = availableLocales;
-    }
-
-    /**
-     * @return the acidTask
-     */
-    public AcidTask getAcidTask() {
-        return acidTask;
     }
 
     /**

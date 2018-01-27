@@ -16,12 +16,7 @@
  *******************************************************************************/
 package com.wasteofplastic.askyblock.listeners;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -109,7 +104,7 @@ import com.wasteofplastic.askyblock.util.VaultHelper;
 public class IslandGuard implements Listener {
     private final ASkyBlock plugin;
     private final static boolean DEBUG = false;
-    private HashMap<UUID,Vector> onPlate = new HashMap<>();
+    private Map<UUID,Vector> onPlate = new HashMap<>();
     private Set<Location> tntBlocks = new HashSet<>();
     private Set<UUID> litCreeper = new HashSet<>();
 
