@@ -816,7 +816,7 @@ public class Schematic {
      * This method pastes a schematic.
      * @param loc
      * @param player
-     * @param partner 
+     * @param partner
      */
     public void pasteSchematic(final Location loc, final Player player, boolean teleport, final PasteReason reason) {
         // If this is not a file schematic, paste the default island

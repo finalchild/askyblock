@@ -719,8 +719,6 @@ public class AdminCmd implements CommandExecutor, TabCompleter {
                     plugin.setUpdateCheck(null);
                 }
                 plugin.getIslandCmd().loadSchematics();
-                if (plugin.getAcidTask() != null)
-                    plugin.getAcidTask().runAcidItemRemovalTask();
                 // Give back any temporary permissions
                 plugin.getPlayerEvents().giveAllTempPerms();
                 // Reset resets if the admin changes it to or from unlimited
